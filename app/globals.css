@@ -1,0 +1,303 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-foreground: #f8fafc;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #f8fafc;
+  --popover: #000000;
+  --popover-foreground: #f8fafc;
+  --primary: #a855f7;
+  --primary-foreground: #ffffff;
+  --secondary: #0f172a;
+  --secondary-foreground: #f8fafc;
+  --muted: #0f172a;
+  --muted-foreground: #a1a1aa;
+  --accent: #1e1b4b;
+  --accent-foreground: #ffffff;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #a855f7;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* Aggressive Dark Mode Overrides for Backgrounds */
+  .dark, 
+  .dark body, 
+  .dark main, 
+  .dark section, 
+  .dark article,
+  .dark .card,
+  .dark div[class*="card"],
+  .dark header, 
+  .dark footer,
+  .dark aside, 
+  .dark nav {
+    background-color: #000000 !important;
+  }
+
+  /* Force any white background to black in dark mode */
+  .dark [class*="bg-white"],
+  .dark [class*="bg-slate-50"],
+  .dark [class*="bg-gray-50"],
+  .dark [class*="bg-card"] {
+    background-color: #000000 !important;
+  }
+
+  /* Ensure all text that should be dark on light backgrounds is white on dark backgrounds */
+  .dark .text-slate-950,
+  .dark .text-slate-900,
+  .dark .text-slate-800,
+  .dark .text-slate-700,
+  .dark .text-black,
+  .dark .text-gray-900,
+  .dark .text-gray-800,
+  .dark .text-gray-700,
+  .dark .text-zinc-900,
+  .dark .text-zinc-800,
+  .dark .text-foreground {
+    color: #ffffff !important;
+  }
+
+  .dark .text-slate-600,
+  .dark .text-slate-500,
+  .dark .text-gray-600,
+  .dark .text-gray-500,
+  .dark .text-zinc-600,
+  .dark .text-zinc-500,
+  .dark .text-muted-foreground {
+    color: #e2e8f0 !important; /* Slate-200 for high readability */
+  }
+
+  /* Force placeholder colors to be lighter in dark mode */
+  .dark ::placeholder,
+  .dark [class*="placeholder:text-slate"],
+  .dark [class*="placeholder:text-gray"],
+  .dark [class*="placeholder:text-muted"] {
+    color: #94a3b8 !important; /* Slate-400 */
+  }
+
+  /* Preserve white text */
+  .dark .text-white,
+  .dark .group-hover\:text-white,
+  .dark .primary-foreground,
+  .dark [class*="text-purple"],
+  .dark [class*="text-blue"],
+  .dark [class*="text-green"],
+  .dark [class*="text-red"],
+  .dark [class*="text-emerald"] {
+    /* Keep brand colors but ensure they are vibrant */
+  }
+
+  .dark .text-purple-500, .dark .text-purple-600 { color: #d8b4fe !important; } /* Light purple */
+  .dark .text-blue-500, .dark .text-blue-600 { color: #93c5fd !important; } /* Light blue */
+  .dark .text-green-500, .dark .text-green-600 { color: #86efac !important; } /* Light green */
+  .dark .text-red-500, .dark .text-red-600 { color: #fca5a5 !important; } /* Light red */
+  .dark .text-emerald-500, .dark .text-emerald-600 { color: #6ee7b7 !important; }
+
+  /* Ensure chart axes and other faint elements are readable */
+  .dark [class*="text-muted-foreground/"] {
+    color: #e2e8f0 !important;
+    opacity: 0.8 !important;
+  }
+
+  .dark .opacity-40, .dark .opacity-50, .dark .opacity-60 {
+    opacity: 0.7 !important;
+  }
+
+  /* Force high contrast for all labels */
+  .dark label, .dark .Label {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+
+  /* Premium Background Glows for Dark Mode */
+  .dark body {
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .dark body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 10% 10%, rgba(168, 85, 247, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(37, 99, 235, 0.06) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+@layer components {
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .dark .nav-link {
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: #e2e8f0 !important; /* Slate-200 */
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .dark .nav-link-active {
+    background: rgba(168, 85, 247, 0.2) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.2);
+    border: 1px solid rgba(168, 85, 247, 0.5) !important;
+  }
+
+  .dark .nav-link:hover {
+    transform: translateX(6px);
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .dark .nav-link-active svg {
+    color: #ffffff !important;
+  }
+
+  /* Expand background overrides to include dark grays/slates */
+  .dark [class*="bg-slate-9"],
+  .dark [class*="bg-gray-9"],
+  .dark [class*="bg-zinc-9"],
+  .dark [class*="bg-neutral-9"],
+  .dark [class*="bg-slate-8"],
+  .dark [class*="bg-gray-8"] {
+    background-color: #000000 !important;
+  }
+
+  .dark .sidebar-primary-btn {
+    background: rgba(168, 85, 247, 0.1) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(168, 85, 247, 0.4) !important;
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 100px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  }
+
+  .dark .sidebar-primary-btn:hover {
+    background: #1e1b4b !important;
+    color: #ffffff !important;
+    transform: scale(1.06);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  }
+
+  .dark .sidebar-primary-btn:active {
+    transform: scale(0.94);
+  }
+
+  .dark .button, .dark .btn {
+    background: #0f172a !important;
+    color: #a855f7 !important;
+    border: 1px solid #27272a !important;
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* Remove plus/minus scroll buttons from number inputs */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
