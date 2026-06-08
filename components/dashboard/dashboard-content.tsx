@@ -71,24 +71,24 @@ export function DashboardContent() {
             </div>
             
             <div className="space-y-1">
-              <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl lg:text-5xl">
-                <span className="bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent">mera hisaab</span>
+              <h1 className="text-4xl font-black tracking-tight md:text-5xl lg:text-6xl uppercase">
+                <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">mera hisaab</span>
               </h1>
               <p className="max-w-xl text-base font-medium text-muted-foreground/80 md:text-lg">
                 Your business reached a <span className="text-foreground font-bold">₹{(profit).toLocaleString()}</span> net position this month. You're doing great!
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3 pt-1">
-              <Button asChild size="sm" className="h-9 gap-2 rounded-xl bg-purple-600 px-5 font-bold shadow-lg shadow-purple-500/20 hover:bg-purple-700 transition-all">
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Button asChild size="lg" className="h-12 gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 px-8 font-bold shadow-xl shadow-purple-500/20 border-none hover:scale-105 transition-all">
                 <Link href="/add">
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-5 w-5" />
                   New Entry
                 </Link>
               </Button>
-              <Button variant="outline" asChild size="sm" className="h-9 gap-2 rounded-xl border-white/10 bg-white/5 px-5 font-bold backdrop-blur-md hover:bg-white/10 transition-all">
+              <Button variant="outline" asChild size="lg" className="h-12 gap-2 rounded-2xl border-white/10 bg-white/5 px-8 font-bold backdrop-blur-md hover:bg-white/10 transition-all">
                 <Link href="/reports">
-                  <TrendingUp className="h-4 w-4" />
+                  <TrendingUp className="h-5 w-5" />
                   Analytics
                 </Link>
               </Button>

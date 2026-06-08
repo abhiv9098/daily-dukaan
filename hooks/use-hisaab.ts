@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Transaction, ShopSettings, DashboardStats } from "@/types";
 import { isToday, isSameMonth, parseISO } from "date-fns";
 
@@ -10,79 +10,64 @@ const defaultSettings: ShopSettings = {
   darkMode: false,
 };
 
-export function getStorageKeys(userId: string = "default-user") {
-  return {
-    transactions: `dukaan_transactions_${userId}`,
-    settings: `dukaan_settings_${userId}`,
-  };
-}
+const STORAGE_KEYS = {
+  TRANSACTIONS: "hisaab_transactions",
+  SETTINGS: "hisaab_settings",
+};
 
-export function useHisaab(userId: string = "default-user") {
+export function useHisaab(userId: string = "local-user") {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [settings, setSettings] = useState<ShopSettings>(defaultSettings);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const storageKeys = useMemo(
-    () => getStorageKeys(userId),
-    [userId]
-  );
+  // Helper to load from localStorage
+  const loadLocalData = useCallback(() => {
+    try {
+      const storedTransactions = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
+      const storedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
 
-  useEffect(() => {
-    setIsLoaded(false);
-    const savedTransactions = localStorage.getItem(storageKeys.transactions);
-    const savedSettings = localStorage.getItem(storageKeys.settings);
-
-    if (savedTransactions) {
-      setTransactions(JSON.parse(savedTransactions));
-    } else {
-      setTransactions([]);
-    }
-
-    if (savedSettings) {
-      const parsed = JSON.parse(savedSettings);
-      if (
-        parsed.shopName === "http://localhost:3000/settings" ||
-        parsed.shopName === "http://localhost:3000"
-      ) {
-        parsed.shopName = "Mera Hisab";
+      if (storedTransactions) {
+        setTransactions(JSON.parse(storedTransactions));
       }
-      setSettings(parsed);
-    } else {
-      setSettings(defaultSettings);
-    }
 
-    setIsLoaded(true);
-  }, [userId, storageKeys]);
+      if (storedSettings) {
+        setSettings(JSON.parse(storedSettings));
+      } else {
+        // Initialize settings if not present
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(defaultSettings));
+      }
+    } catch (error) {
+      console.error("Error loading data from localStorage:", error);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
-    if (isLoaded && storageKeys) {
-      localStorage.setItem(
-        storageKeys.transactions,
-        JSON.stringify(transactions)
-      );
-    }
-  }, [transactions, isLoaded, storageKeys]);
+    loadLocalData();
+  }, [loadLocalData]);
 
-  useEffect(() => {
-    if (isLoaded && storageKeys) {
-      localStorage.setItem(storageKeys.settings, JSON.stringify(settings));
-    }
-  }, [settings, isLoaded, storageKeys]);
-
-  const addTransaction = (transaction: Omit<Transaction, "id">) => {
-    const newTransaction = {
+  const addTransaction = async (transaction: Omit<Transaction, "id">) => {
+    const newTransaction: Transaction = {
       ...transaction,
       id: crypto.randomUUID(),
     };
-    setTransactions((prev) => [newTransaction, ...prev]);
+
+    const updatedTransactions = [newTransaction, ...transactions];
+    setTransactions(updatedTransactions);
+    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updatedTransactions));
   };
 
-  const deleteTransaction = (id: string) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
+  const deleteTransaction = async (id: string) => {
+    const updatedTransactions = transactions.filter((t) => t.id !== id);
+    setTransactions(updatedTransactions);
+    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updatedTransactions));
   };
 
-  const updateSettings = (newSettings: Partial<ShopSettings>) => {
-    setSettings((prev) => ({ ...prev, ...newSettings }));
+  const updateSettings = async (newSettings: Partial<ShopSettings>) => {
+    const updated = { ...settings, ...newSettings };
+    setSettings(updated);
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
   };
 
   const getStats = useCallback((): DashboardStats => {
@@ -123,7 +108,6 @@ export function useHisaab(userId: string = "default-user") {
 
   return {
     userId,
-    storageKeys: storageKeys ?? getStorageKeys(""),
     transactions,
     settings,
     isLoaded,
