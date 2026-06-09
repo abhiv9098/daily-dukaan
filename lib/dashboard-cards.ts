@@ -12,8 +12,11 @@ import { parseISO, subDays, isSameDay } from "date-fns";
 export function buildDashboardCards(
   stats: DashboardStats,
   transactions: Transaction[],
-  currency: string
+  currency: string,
+  language: string = "en"
 ): AnimatedCardData[] {
+  const isHi = language === "hi";
+  
   const getSparkline = (type: "income" | "expense" | "all") => {
     const days = [6, 5, 4, 3, 2, 1, 0].map(d => subDays(new Date(), d));
     return days.map(day => {
@@ -28,36 +31,36 @@ export function buildDashboardCards(
   return [
     {
       id: "income-today",
-      title: "Today's Income",
+      title: isHi ? "आज की आय" : "Today's Income",
       value: formatCurrency(stats.todayIncome, currency),
-      description: "Sales & credits today",
+      description: isHi ? "आज की बिक्री और क्रेडिट" : "Sales & credits today",
       icon: TrendingUp,
       iconClassName: "bg-green-500/10 text-green-500",
       sparklineData: getSparkline("income"),
     },
     {
       id: "expense-today",
-      title: "Today's Expense",
+      title: isHi ? "आज का खर्च" : "Today's Expense",
       value: formatCurrency(stats.todayExpense, currency),
-      description: "Stock & bills today",
+      description: isHi ? "आज का स्टॉक और बिल" : "Stock & bills today",
       icon: TrendingDown,
       iconClassName: "bg-red-500/10 text-red-500",
       sparklineData: getSparkline("expense"),
     },
     {
       id: "income-month",
-      title: "Monthly Income",
+      title: isHi ? "मासिक आय" : "Monthly Income",
       value: formatCurrency(stats.monthlyIncome, currency),
-      description: "This calendar month",
+      description: isHi ? "इस कैलेंडर माह" : "This calendar month",
       icon: ArrowUpRight,
       iconClassName: "bg-blue-500/10 text-blue-500",
       sparklineData: getSparkline("income"),
     },
     {
       id: "balance",
-      title: "Net Balance",
+      title: isHi ? "कुल शेष" : "Net Balance",
       value: formatCurrency(stats.remainingBalance, currency),
-      description: "Overall cash position",
+      description: isHi ? "कुल नकद स्थिति" : "Overall cash position",
       icon: Wallet,
       iconClassName: "bg-purple-500/10 text-purple-500",
       sparklineData: getSparkline("all"),

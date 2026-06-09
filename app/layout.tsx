@@ -4,6 +4,7 @@ import "./globals.css";
 import { HisaabProvider } from "@/context/hisaab-context";
 import { FilterProvider } from "@/context/filter-context";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { LanguageProvider } from "@/context/language-context";
 import { Agentation } from "agentation";
 
 const geistSans = Geist({
@@ -33,14 +34,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
       <body className="min-h-screen bg-background">
-        <HisaabProvider>
-          <FilterProvider>
-            <ThemeProvider>
-              {children}
-              <Agentation />
-            </ThemeProvider>
-          </FilterProvider>
-        </HisaabProvider>
+        <LanguageProvider>
+          <HisaabProvider>
+            <FilterProvider>
+              <ThemeProvider>
+                {children}
+                <Agentation />
+              </ThemeProvider>
+            </FilterProvider>
+          </HisaabProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

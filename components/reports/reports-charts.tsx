@@ -212,7 +212,7 @@ export function ReportsCharts({ transactions }: ReportsChartsProps) {
                 strokeWidth={3} 
                 animationDuration={2500}
                 dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }}
-                activeDot={{ r: 6, strokeWidth: 0, shadow: '0 0 10px rgba(16, 185, 129, 0.5)' }}
+                activeDot={{ r: 6, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>

@@ -14,8 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { LanguageToggle } from "@/components/layout/language-toggle";
 import { useHisaabContext } from "@/context/hisaab-context";
 import { useFilterContext } from "@/context/filter-context";
+import { useLanguage } from "@/context/language-context";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
@@ -29,6 +31,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { settings } = useHisaabContext();
   const { filters, setSearch } = useFilterContext();
+  const { t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-white/5 bg-background/60 px-4 backdrop-blur-2xl lg:px-8">
@@ -63,7 +66,9 @@ export function Navbar() {
                   )}
                 >
                   <item.icon className="h-5 w-5" />
-                  <span className="font-bold uppercase tracking-wider">{item.label}</span>
+                  <span className="font-bold uppercase tracking-wider">
+                    {t(item.label.toLowerCase() as any)}
+                  </span>
                 </Link>
               </SheetClose>
             ))}
@@ -72,7 +77,7 @@ export function Navbar() {
                 <Button asChild className="w-full gap-2 rounded-xl h-12 font-bold bg-gradient-to-r from-purple-600 to-blue-600 border-none">
                   <Link href="/add">
                     <Plus className="h-5 w-5" />
-                    New Entry
+                    {t("newEntry")}
                   </Link>
                 </Button>
               </SheetClose>
@@ -86,7 +91,7 @@ export function Navbar() {
           <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors duration-300 group-focus-within:text-purple-500 z-10" />
           <input
             type="search"
-            placeholder="Search entries..."
+            placeholder={t("searchPlaceholder")}
             className="w-full h-10 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 pl-11 pr-4 text-sm outline-none backdrop-blur-xl transition-all duration-300 placeholder:text-muted-foreground focus:border-purple-500/50 focus:bg-background focus:ring-4 focus:ring-purple-500/10"
             value={filters.search}
             onChange={(e) => setSearch(e.target.value)}
@@ -95,6 +100,7 @@ export function Navbar() {
       </div>
 
       <div className="flex items-center gap-3">
+        <LanguageToggle />
         <Link href="/profile">
           <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 border border-white/5 bg-white/5 hover:border-purple-500/50 transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]">
              <User className="h-5 w-5 text-muted-foreground group-hover:text-purple-500 transition-colors" />

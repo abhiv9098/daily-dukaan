@@ -65,7 +65,7 @@ const containsSheetTitle = (children: React.ReactNode): boolean =>
       return true
     }
 
-    return containsSheetTitle(child.props.children)
+    return containsSheetTitle((child.props as any).children)
   })
 
 const SheetContent = React.forwardRef<
