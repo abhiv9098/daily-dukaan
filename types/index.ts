@@ -66,6 +66,23 @@ export interface ShopSettings {
   appLockEnabled: boolean;
 }
 
+export interface Loss {
+  id: string;
+  amount: number;
+  description: string;
+  date: string;
+}
+
+export interface Borrowing {
+  id: string;
+  personName: string;
+  personPhoto?: string;
+  amount: number;
+  remainingBalance: number;
+  date: string;
+  notes?: string;
+}
+
 export interface DashboardStats {
   todayIncome: number;
   todayExpense: number;
@@ -76,5 +93,8 @@ export interface DashboardStats {
   expense: number;
   totalCreditGiven: number;
   activeBudgets: number;
+  totalLoss: number;
+  totalBorrowed: number;
+  totalOutstandingLiability: number;
 }
 

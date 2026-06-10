@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { AnimatedCardData } from "@/types/card";
 import { cn } from "@/lib/utils";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import Link from "next/link";
 
 interface AnimatedCardProps {
   card: AnimatedCardData;
@@ -15,16 +16,10 @@ export function AnimatedCard({ card, className }: AnimatedCardProps) {
   const sparkData = card.sparklineData?.map((v, i) => ({ value: v, id: i })) || [];
   const isPositive = sparkData.length > 0 && sparkData[sparkData.length - 1].value >= sparkData[0].value;
 
-  return (
-    <motion.div
-      whileHover={{ y: -2 }}
-      className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition-all duration-300 hover:shadow-md",
-        className
-      )}
-    >
+  const content = (
+    <>
       <div className="flex items-start justify-between mb-3">
-        <div className="rounded-xl p-2 bg-secondary text-foreground">
+        <div className={cn("rounded-xl p-2 bg-secondary text-foreground", card.iconClassName)}>
           <Icon className="h-4 w-4" />
         </div>
         {card.sparklineData && (
@@ -52,6 +47,24 @@ export function AnimatedCard({ card, className }: AnimatedCardProps) {
           {card.value}
         </p>
       </div>
+    </>
+  );
+
+  return (
+    <motion.div
+      whileHover={{ y: -2 }}
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition-all duration-300 hover:shadow-md",
+        className
+      )}
+    >
+      {card.href ? (
+        <Link href={card.href} className="block">
+          {content}
+        </Link>
+      ) : (
+        content
+      )}
     </motion.div>
   );
 }

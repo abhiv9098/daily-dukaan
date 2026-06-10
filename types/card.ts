@@ -8,4 +8,5 @@ export interface AnimatedCardData {
   icon: LucideIcon;
   iconClassName?: string;
   sparklineData?: number[];
+  href?: string;
 }

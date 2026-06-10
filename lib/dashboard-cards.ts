@@ -4,7 +4,8 @@ import {
   TrendingUp,
   Wallet,
   Users,
-  Target
+  Target,
+  AlertTriangle
 } from "lucide-react";
 import { DashboardStats, Transaction } from "@/types";
 import { AnimatedCardData } from "@/types/card";
@@ -73,6 +74,16 @@ export function buildDashboardCards(
       icon: Target,
       iconClassName: "bg-purple-500/10 text-purple-500",
       sparklineData: [1, 2, 2, 3, 3, 4, stats.activeBudgets || 0],
+    },
+    {
+      id: "liabilities",
+      title: isHi ? "नुकसान और उधार" : "Loss & Borrowings",
+      value: formatCurrency(stats.totalOutstandingLiability || 0, currency),
+      description: isHi ? "कुल वित्तीय देनदारियां" : "Total financial liabilities",
+      icon: AlertTriangle,
+      iconClassName: "bg-rose-500/10 text-rose-500",
+      sparklineData: [10, 8, 12, 15, 14, 18, 20],
+      href: "/liabilities",
     },
   ];
 }

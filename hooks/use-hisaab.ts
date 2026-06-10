@@ -8,7 +8,9 @@ import {
   Budget, 
   SavingsGoal, 
   Customer, 
-  CreditTransaction 
+  CreditTransaction,
+  Loss,
+  Borrowing
 } from "@/types";
 import { isToday, isSameMonth, parseISO, format } from "date-fns";
 
@@ -26,6 +28,8 @@ const STORAGE_KEYS = {
   SAVINGS: "hisaab_savings",
   CUSTOMERS: "hisaab_customers",
   CREDIT_TRANSACTIONS: "hisaab_credit_transactions",
+  LOSSES: "hisaab_losses",
+  BORROWINGS: "hisaab_borrowings",
 };
 
 export function useHisaab(userId: string = "local-user") {
@@ -35,6 +39,8 @@ export function useHisaab(userId: string = "local-user") {
   const [savings, setSavings] = useState<SavingsGoal[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [creditTransactions, setCreditTransactions] = useState<CreditTransaction[]>([]);
+  const [losses, setLosses] = useState<Loss[]>([]);
+  const [borrowings, setBorrowings] = useState<Borrowing[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Helper to load from localStorage
@@ -46,6 +52,8 @@ export function useHisaab(userId: string = "local-user") {
       const storedSavings = localStorage.getItem(STORAGE_KEYS.SAVINGS);
       const storedCustomers = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
       const storedCredit = localStorage.getItem(STORAGE_KEYS.CREDIT_TRANSACTIONS);
+      const storedLosses = localStorage.getItem(STORAGE_KEYS.LOSSES);
+      const storedBorrowings = localStorage.getItem(STORAGE_KEYS.BORROWINGS);
 
       if (storedTransactions) setTransactions(JSON.parse(storedTransactions));
       if (storedSettings) setSettings(JSON.parse(storedSettings));
@@ -53,6 +61,8 @@ export function useHisaab(userId: string = "local-user") {
       if (storedSavings) setSavings(JSON.parse(storedSavings));
       if (storedCustomers) setCustomers(JSON.parse(storedCustomers));
       if (storedCredit) setCreditTransactions(JSON.parse(storedCredit));
+      if (storedLosses) setLosses(JSON.parse(storedLosses));
+      if (storedBorrowings) setBorrowings(JSON.parse(storedBorrowings));
 
       if (!storedSettings) {
         localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(defaultSettings));
@@ -154,6 +164,46 @@ export function useHisaab(userId: string = "local-user") {
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updatedCustomers));
   };
 
+  // --- Losses ---
+  const addLoss = async (loss: Omit<Loss, "id">) => {
+    const newLoss: Loss = { ...loss, id: crypto.randomUUID() };
+    const updated = [newLoss, ...losses];
+    setLosses(updated);
+    localStorage.setItem(STORAGE_KEYS.LOSSES, JSON.stringify(updated));
+  };
+
+  const updateLoss = async (id: string, loss: Partial<Loss>) => {
+    const updated = losses.map(l => l.id === id ? { ...l, ...loss } : l);
+    setLosses(updated);
+    localStorage.setItem(STORAGE_KEYS.LOSSES, JSON.stringify(updated));
+  };
+
+  const deleteLoss = async (id: string) => {
+    const updated = losses.filter(l => l.id !== id);
+    setLosses(updated);
+    localStorage.setItem(STORAGE_KEYS.LOSSES, JSON.stringify(updated));
+  };
+
+  // --- Borrowings ---
+  const addBorrowing = async (borrowing: Omit<Borrowing, "id" | "remainingBalance">) => {
+    const newBorrowing: Borrowing = { ...borrowing, id: crypto.randomUUID(), remainingBalance: borrowing.amount };
+    const updated = [newBorrowing, ...borrowings];
+    setBorrowings(updated);
+    localStorage.setItem(STORAGE_KEYS.BORROWINGS, JSON.stringify(updated));
+  };
+
+  const updateBorrowing = async (id: string, borrowing: Partial<Borrowing>) => {
+    const updated = borrowings.map(b => b.id === id ? { ...b, ...borrowing } : b);
+    setBorrowings(updated);
+    localStorage.setItem(STORAGE_KEYS.BORROWINGS, JSON.stringify(updated));
+  };
+
+  const deleteBorrowing = async (id: string) => {
+    const updated = borrowings.filter(b => b.id !== id);
+    setBorrowings(updated);
+    localStorage.setItem(STORAGE_KEYS.BORROWINGS, JSON.stringify(updated));
+  };
+
   // --- Stats ---
   const getStats = useCallback((): DashboardStats => {
     const now = new Date();
@@ -183,6 +233,10 @@ export function useHisaab(userId: string = "local-user") {
 
     const totalCreditGiven = customers.reduce((acc, c) => acc + (c.totalCredit > 0 ? c.totalCredit : 0), 0);
     const activeBudgets = budgets.filter(b => b.month === currentMonth).length;
+    
+    const totalLoss = losses.reduce((acc, l) => acc + l.amount, 0);
+    const totalBorrowed = borrowings.reduce((acc, b) => acc + b.amount, 0);
+    const totalOutstandingLiability = borrowings.reduce((acc, b) => acc + b.remainingBalance, 0);
 
     return {
       todayIncome,
@@ -194,8 +248,11 @@ export function useHisaab(userId: string = "local-user") {
       expense: totalExpense,
       totalCreditGiven,
       activeBudgets,
+      totalLoss,
+      totalBorrowed,
+      totalOutstandingLiability,
     };
-  }, [transactions, customers, budgets]);
+  }, [transactions, customers, budgets, losses, borrowings]);
 
   return {
     userId,
@@ -205,6 +262,8 @@ export function useHisaab(userId: string = "local-user") {
     savings,
     customers,
     creditTransactions,
+    losses,
+    borrowings,
     isLoaded,
     addTransaction,
     deleteTransaction,
@@ -216,6 +275,12 @@ export function useHisaab(userId: string = "local-user") {
     updateSavingsProgress,
     addCustomer,
     addCreditTransaction,
+    addLoss,
+    updateLoss,
+    deleteLoss,
+    addBorrowing,
+    updateBorrowing,
+    deleteBorrowing,
     stats: getStats(),
   };
 }
