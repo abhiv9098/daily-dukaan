@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Category } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export function BudgetsList() {
   const { budgets, addBudget, deleteBudget, settings, transactions } = useHisaabContext();

@@ -72,7 +72,7 @@ export default function InvoicePage() {
         `${settings.currency} ${item.price}`,
         `${settings.currency} ${item.quantity * item.price}`
       ]),
-      headStyles: { fillStyle: "primary", fillColor: [99, 102, 241] },
+      headStyles: { fillColor: [99, 102, 241] },
       foot: [["", "", "Grand Total", `${settings.currency} ${calculateTotal()}`]],
       footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: "bold" }
     });

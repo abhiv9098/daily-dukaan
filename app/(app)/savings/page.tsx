@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
 
 export default function SavingsPage() {
   const { savings, addSavingsGoal, updateSavingsProgress, settings } = useHisaabContext();
