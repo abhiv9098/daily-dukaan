@@ -28,7 +28,7 @@ export function AnimatedCardGrid({ cards, className }: AnimatedCardGridProps) {
       initial="hidden"
       animate="visible"
       className={cn(
-        "grid grid-cols-2 gap-3 md:grid-cols-4",
+        "grid grid-cols-2 gap-2 md:gap-3 md:grid-cols-4",
         className
       )}
     >

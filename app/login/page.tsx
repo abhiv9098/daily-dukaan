@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Store, Sparkles, Loader2 } from 'lucide-react';
+import { Store, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function LoginPage() {
@@ -17,117 +16,89 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock login delay
     setTimeout(() => {
       router.push('/');
     }, 1000);
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#09090b] p-6 selection:bg-purple-500/30">
-      {/* Background Orbs */}
-      <div className="absolute top-0 left-0 h-full w-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-purple-600/20 blur-[120px]" />
-        <div className="absolute -bottom-[10%] -right-[10%] h-[40%] w-[40%] rounded-full bg-blue-600/20 blur-[120px]" />
-      </div>
-
+    <div className="min-h-[100dvh] flex flex-col justify-center px-6 py-12 bg-background">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="z-10 w-full max-w-md"
+        className="w-full max-w-sm mx-auto"
       >
-        <div className="mb-8 flex flex-col items-center gap-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/20">
-            <Store className="h-6 w-6 text-white" />
+        <div className="mb-10 flex flex-col items-center text-center">
+          <div className="h-12 w-12 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+            <Store className="h-6 w-6" />
           </div>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white">
-            mera <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">hisaab</span>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Hisaab
           </h1>
-          <p className="text-sm font-medium text-muted-foreground/60 uppercase tracking-[0.2em]">
-            Modern Business Accounting
+          <p className="mt-2 text-sm text-muted-foreground">
+            Professional business accounting.
           </p>
         </div>
 
-        <Card className="border-white/10 bg-[#09090b]/40 backdrop-blur-2xl shadow-2xl">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold text-white">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </CardTitle>
-            <CardDescription className="text-muted-foreground/80">
+        <div className="bg-card border border-border shadow-sm rounded-[24px] p-6 sm:p-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold">
+              {isLogin ? 'Welcome back' : 'Create an account'}
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
               {isLogin 
-                ? 'Enter your credentials to access your dukaan hisaab.' 
-                : 'Start managing your business finances with ease.'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  required
-                  className="h-11 border-white/10 bg-white/5 text-white placeholder:text-muted-foreground/30 focus:border-purple-500/50 focus:ring-purple-500/50"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="h-11 border-white/10 bg-white/5 text-white placeholder:text-muted-foreground/30 focus:border-purple-500/50 focus:ring-purple-500/50"
-                />
-              </div>
+                ? 'Enter your details to access your account.' 
+                : 'Start managing your finances today.'}
+            </p>
+          </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-11 bg-gradient-to-r from-purple-600 to-blue-600 font-bold text-white shadow-lg shadow-purple-500/20 hover:from-purple-700 hover:to-blue-700 transition-all"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    {isLogin ? 'Sign In' : 'Sign Up'}
-                    <Sparkles className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <div className="relative w-full">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/5" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#09090b] px-2 text-muted-foreground/40">Or continue with</span>
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="name@example.com"
+                required
+                className="h-12 rounded-xl border-border bg-transparent focus-visible:ring-primary shadow-none"
+              />
             </div>
-            <p className="text-center text-sm text-muted-foreground/60">
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                className="h-12 rounded-xl border-border bg-transparent focus-visible:ring-primary shadow-none"
+              />
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full h-12 rounded-full font-bold shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 mt-2"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                isLogin ? 'Sign In' : 'Sign Up'
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-muted-foreground">
               {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="font-bold text-purple-400 hover:text-purple-300 transition-colors"
+                className="font-bold text-foreground hover:underline"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
-          </CardFooter>
-        </Card>
-
-        <div className="mt-8 flex justify-center gap-6 text-xs font-medium text-muted-foreground/40 uppercase tracking-widest">
-          <span>Secure</span>
-          <span>•</span>
-          <span>Encrypted</span>
-          <span>•</span>
-          <span>Private</span>
+          </div>
         </div>
       </motion.div>
     </div>

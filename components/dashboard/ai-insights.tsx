@@ -59,34 +59,34 @@ export function AIInsights({ transactions, stats }: AIInsightsProps) {
   }, [transactions, stats]);
 
   return (
-    <Card className="rounded-3xl border border-white/10 bg-card/40 shadow-xl backdrop-blur-2xl dark:bg-[#09090b]/60 overflow-hidden">
-      <div className="p-6 border-b border-white/5 bg-gradient-to-r from-purple-500/5 to-transparent flex items-center justify-between">
+    <Card className="rounded-2xl md:rounded-3xl border border-white/10 bg-card/40 shadow-xl backdrop-blur-2xl dark:bg-[#09090b]/60 overflow-hidden">
+      <div className="p-4 md:p-6 border-b border-white/5 bg-gradient-to-r from-purple-500/5 to-transparent flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-500">
-            <Sparkles className="h-4 w-4" />
+          <div className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg md:rounded-xl bg-purple-500/10 text-purple-500">
+            <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4" />
           </div>
           <div>
-            <h3 className="text-base font-bold">Smart Recommendations</h3>
-            <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground opacity-60">AI-Powered Insights</p>
+            <h3 className="text-sm md:text-base font-bold">Smart Recommendations</h3>
+            <p className="text-[8px] md:text-[10px] uppercase tracking-widest font-semibold text-muted-foreground opacity-60">AI-Powered Insights</p>
           </div>
         </div>
       </div>
       
-      <div className="p-6 grid gap-4 sm:grid-cols-2">
+      <div className="p-4 md:p-6 grid gap-3 md:gap-4 sm:grid-cols-2">
         {insights.map((insight, i) => (
-          <div key={i} className="group relative rounded-[1.5rem] border border-white/5 bg-white/5 p-4 transition-all hover:bg-white/[0.08] hover:border-white/10">
-            <div className="flex items-start gap-4">
-              <div className={`shrink-0 rounded-2xl p-2.5 shadow-inner ${insight.bg}`}>
-                <insight.icon className={`h-5 w-5 ${insight.color}`} />
+          <div key={i} className="group relative rounded-xl md:rounded-[1.5rem] border border-white/5 bg-white/5 p-3 md:p-4 transition-all hover:bg-white/[0.08] hover:border-white/10">
+            <div className="flex items-start gap-3 md:gap-4">
+              <div className={`shrink-0 rounded-xl md:rounded-2xl p-2 md:p-2.5 shadow-inner ${insight.bg}`}>
+                <insight.icon className={`h-4 w-4 md:h-5 md:w-5 ${insight.color}`} />
               </div>
-              <div className="space-y-1">
-                <h4 className="text-sm font-bold text-foreground/90">{insight.title}</h4>
-                <p className="text-xs leading-relaxed text-muted-foreground line-clamp-2">
+              <div className="space-y-0.5 md:space-y-1">
+                <h4 className="text-xs md:text-sm font-bold text-foreground/90">{insight.title}</h4>
+                <p className="text-[10px] md:text-xs leading-relaxed text-muted-foreground line-clamp-2">
                   {insight.text}
                 </p>
               </div>
             </div>
-            <div className="absolute right-4 top-4 h-1.5 w-1.5 rounded-full bg-purple-500/20 group-hover:bg-purple-500 transition-colors" />
+            <div className="absolute right-3 top-3 h-1 w-1 md:h-1.5 md:w-1.5 rounded-full bg-purple-500/20 group-hover:bg-purple-500 transition-colors" />
           </div>
         ))}
       </div>

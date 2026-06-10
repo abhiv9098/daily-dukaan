@@ -105,9 +105,9 @@ export function ReportsCharts({ transactions }: ReportsChartsProps) {
           </div>
         </div>
 
-        <div className="h-[340px] w-full">
+        <div className="h-[300px] md:h-[340px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyTrend} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barGap={8}>
+            <BarChart data={monthlyTrend} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barGap={window.innerWidth < 768 ? 4 : 8}>
               <defs>
                 <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#a855f7" stopOpacity={1} />
@@ -123,7 +123,7 @@ export function ReportsCharts({ transactions }: ReportsChartsProps) {
                 dataKey="name" 
                 tickLine={false} 
                 axisLine={false} 
-                fontSize={12} 
+                fontSize={10} 
                 tick={{ fill: 'currentColor', opacity: 0.4 }} 
                 dy={10}
               />
@@ -131,7 +131,7 @@ export function ReportsCharts({ transactions }: ReportsChartsProps) {
                 tickFormatter={(v) => `₹${v >= 1000 ? (v / 1000) + 'k' : v}`} 
                 tickLine={false} 
                 axisLine={false} 
-                fontSize={12} 
+                fontSize={10} 
                 tick={{ fill: 'currentColor', opacity: 0.4 }} 
               />
               <Tooltip 
@@ -142,23 +142,23 @@ export function ReportsCharts({ transactions }: ReportsChartsProps) {
                 verticalAlign="top" 
                 align="right" 
                 iconType="circle" 
-                wrapperStyle={{ paddingBottom: '30px', fontSize: '12px', fontWeight: 'bold' }} 
+                wrapperStyle={{ paddingBottom: '20px', fontSize: '10px', fontWeight: 'bold' }} 
               />
               <Bar 
                 dataKey="income" 
                 fill="url(#incomeGradient)" 
-                radius={[6, 6, 0, 0]} 
+                radius={[4, 4, 0, 0]} 
                 name="Income" 
                 animationDuration={1500}
-                barSize={32}
+                barSize={window.innerWidth < 768 ? 16 : 32}
               />
               <Bar 
                 dataKey="expense" 
                 fill="url(#expenseGradient)" 
-                radius={[6, 6, 0, 0]} 
+                radius={[4, 4, 0, 0]} 
                 name="Expense" 
                 animationDuration={2000}
-                barSize={32}
+                barSize={window.innerWidth < 768 ? 16 : 32}
               />
             </BarChart>
           </ResponsiveContainer>
