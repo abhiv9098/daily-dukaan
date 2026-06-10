@@ -15,13 +15,14 @@ export interface TransactionFilters {
 
 export function getDefaultFilters(): TransactionFilters {
   const now = new Date();
+  const dateStr = format(now, "yyyy-MM-dd");
   return {
     search: "",
     type: "all",
     category: "all",
     paymentMode: "all",
-    dateFrom: format(startOfMonth(now), "yyyy-MM-dd"),
-    dateTo: format(endOfMonth(now), "yyyy-MM-dd"),
+    dateFrom: dateStr,
+    dateTo: dateStr,
   };
 }
 

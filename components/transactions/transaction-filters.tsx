@@ -99,6 +99,23 @@ export function TransactionFiltersBar({ showSearch = true }: { showSearch?: bool
                   </SelectContent>
                 </Select>
              </div>
+             <div className="space-y-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Date Range</span>
+                <div className="flex gap-1">
+                   <Input 
+                    type="date" 
+                    value={filters.dateFrom} 
+                    onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
+                    className="h-10 rounded-xl bg-secondary/50 border-none text-[10px] p-2"
+                   />
+                   <Input 
+                    type="date" 
+                    value={filters.dateTo} 
+                    onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
+                    className="h-10 rounded-xl bg-secondary/50 border-none text-[10px] p-2"
+                   />
+                </div>
+             </div>
           </div>
           
           {(activeFilterCount > 0 || filters.search) && (

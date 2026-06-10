@@ -5,7 +5,6 @@ import { HisaabProvider } from "@/context/hisaab-context";
 import { FilterProvider } from "@/context/filter-context";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { LanguageProvider } from "@/context/language-context";
-import { Agentation } from "agentation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +38,6 @@ export default function RootLayout({
             <FilterProvider>
               <ThemeProvider>
                 {children}
-                <Agentation />
               </ThemeProvider>
             </FilterProvider>
           </HisaabProvider>

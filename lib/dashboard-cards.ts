@@ -3,6 +3,8 @@ import {
   TrendingDown,
   TrendingUp,
   Wallet,
+  Users,
+  Target
 } from "lucide-react";
 import { DashboardStats, Transaction } from "@/types";
 import { AnimatedCardData } from "@/types/card";
@@ -13,12 +15,13 @@ export function buildDashboardCards(
   stats: DashboardStats,
   transactions: Transaction[],
   currency: string,
-  language: string = "en"
+  language: string = "en",
+  referenceDate: Date = new Date()
 ): AnimatedCardData[] {
   const isHi = language === "hi";
   
   const getSparkline = (type: "income" | "expense" | "all") => {
-    const days = [6, 5, 4, 3, 2, 1, 0].map(d => subDays(new Date(), d));
+    const days = [6, 5, 4, 3, 2, 1, 0].map(d => subDays(referenceDate, d));
     return days.map(day => {
       const dayTx = transactions.filter(t => isSameDay(parseISO(t.date), day));
       if (type === "all") {
@@ -28,42 +31,49 @@ export function buildDashboardCards(
     });
   };
 
+  const isTodayRef = isSameDay(referenceDate, new Date());
+
   return [
     {
       id: "income-today",
-      title: isHi ? "आज की आय" : "Today's Income",
+      title: isTodayRef 
+        ? (isHi ? "आज की आय" : "Today's Income")
+        : (isHi ? "दिन की आय" : "Day's Income"),
       value: formatCurrency(stats.todayIncome, currency),
-      description: isHi ? "आज की बिक्री और क्रेडिट" : "Sales & credits today",
+      description: isHi ? "कुल बिक्री" : "Total sales",
       icon: TrendingUp,
-      iconClassName: "bg-green-500/10 text-green-500",
+      iconClassName: "bg-emerald-500/10 text-emerald-500",
       sparklineData: getSparkline("income"),
     },
     {
       id: "expense-today",
-      title: isHi ? "आज का खर्च" : "Today's Expense",
+      title: isTodayRef
+        ? (isHi ? "आज का खर्च" : "Today's Expense")
+        : (isHi ? "दिन का खर्च" : "Day's Expense"),
       value: formatCurrency(stats.todayExpense, currency),
-      description: isHi ? "आज का स्टॉक और बिल" : "Stock & bills today",
+      description: isHi ? "कुल बिल" : "Total bills",
       icon: TrendingDown,
-      iconClassName: "bg-red-500/10 text-red-500",
+      iconClassName: "bg-rose-500/10 text-rose-500",
       sparklineData: getSparkline("expense"),
     },
     {
-      id: "income-month",
-      title: isHi ? "मासिक आय" : "Monthly Income",
-      value: formatCurrency(stats.monthlyIncome, currency),
-      description: isHi ? "इस कैलेंडर माह" : "This calendar month",
-      icon: ArrowUpRight,
+      id: "khata-summary",
+      title: isHi ? "खाता बकाया" : "Khata Receivable",
+      value: formatCurrency(stats.totalCreditGiven || 0, currency),
+      description: isHi ? "ग्राहकों से लेना है" : "Pending from customers",
+      icon: Users,
       iconClassName: "bg-blue-500/10 text-blue-500",
-      sparklineData: getSparkline("income"),
+      sparklineData: [5, 10, 8, 15, 12, 20, 18], // Placeholder trend
     },
     {
-      id: "balance",
-      title: isHi ? "कुल शेष" : "Net Balance",
-      value: formatCurrency(stats.remainingBalance, currency),
-      description: isHi ? "कुल नकद स्थिति" : "Overall cash position",
-      icon: Wallet,
+      id: "budgets-active",
+      title: isHi ? "सक्रिय बजट" : "Active Budgets",
+      value: stats.activeBudgets?.toString() || "0",
+      description: isHi ? "इस महीने की योजना" : "Planned for this month",
+      icon: Target,
       iconClassName: "bg-purple-500/10 text-purple-500",
-      sparklineData: getSparkline("all"),
+      sparklineData: [1, 2, 2, 3, 3, 4, stats.activeBudgets || 0],
     },
   ];
 }
+

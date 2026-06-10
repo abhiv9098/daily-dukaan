@@ -9,7 +9,7 @@ export type Category =
   | 'Salary' 
   | 'Personal' 
   | 'Other'
-  | 'Sales'; // Added Sales for income
+  | 'Sales';
 
 export type PaymentMode = 'Cash' | 'UPI' | 'Bank';
 
@@ -22,12 +22,48 @@ export interface Transaction {
   date: string; // ISO string
   paymentMode: PaymentMode;
   customerName?: string;
+  customerId?: string; // Linked to a Customer for Khata
+}
+
+export interface Budget {
+  id: string;
+  category: Category | 'All';
+  amount: number;
+  spent: number;
+  month: string; // YYYY-MM
+}
+
+export interface SavingsGoal {
+  id: string;
+  title: string;
+  targetAmount: number;
+  currentAmount: number;
+  deadline?: string;
+  category?: string;
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  phone?: string;
+  totalCredit: number; // Total amount they owe (positive) or we owe them (negative)
+  lastTransactionDate: string;
+}
+
+export interface CreditTransaction {
+  id: string;
+  customerId: string;
+  amount: number;
+  type: 'give' | 'receive'; // give = credit given (increase balance), receive = payment received (decrease balance)
+  description: string;
+  date: string;
 }
 
 export interface ShopSettings {
   shopName: string;
   currency: string;
   darkMode: boolean;
+  appLockEnabled: boolean;
 }
 
 export interface DashboardStats {
@@ -38,4 +74,7 @@ export interface DashboardStats {
   remainingBalance: number;
   income: number;
   expense: number;
+  totalCreditGiven: number;
+  activeBudgets: number;
 }
+
