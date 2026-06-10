@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDownLeft, ArrowUpRight, Check, ChevronDown, User, Loader2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Check, ChevronDown, User, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ import { getCategoriesForType, PAYMENT_MODES, CATEGORY_DETAILS, PAYMENT_MODE_DET
 import { Category, PaymentMode, TransactionType } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export function TransactionForm() {
   const router = useRouter();
@@ -69,6 +70,16 @@ export function TransactionForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Shortcut to Loss & Borrowings */}
+      <div className="flex justify-center -mt-2 mb-4">
+        <Button variant="outline" asChild className="rounded-full h-9 px-4 text-xs font-bold border-rose-200/60 dark:border-rose-500/20 bg-rose-50/50 dark:bg-rose-500/10 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-500/20 hover:text-rose-600 transition-all border-dashed shadow-sm">
+          <Link href="/liabilities">
+            <AlertTriangle className="h-3.5 w-3.5 mr-2" />
+            Record Loss or Borrowing
+          </Link>
+        </Button>
+      </div>
+
       {/* Type Toggle - Modern Segmented Control */}
       <div className="relative flex bg-slate-100 dark:bg-white/5 p-1 rounded-2xl h-14 w-full max-w-sm mx-auto shadow-inner border border-slate-200/50 dark:border-white/5">
         <div className="relative flex w-full">
