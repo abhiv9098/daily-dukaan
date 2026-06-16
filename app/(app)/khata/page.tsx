@@ -17,7 +17,7 @@ export default function KhataPage() {
   const { customers, addCustomer, addCreditTransaction, settings } = useHisaabContext();
   const [search, setSearch] = useState("");
   const [isAddingCustomer, setIsAddingCustomer] = useState(false);
-  const [newCustomer, setNewCustomer] = useState({ name: "", phone: "" });
+  const [newCustomer, setNewCustomer] = useState({ name: "", phone: "", initialAmount: "", udharType: "give" as "give" | "receive" });
 
   // Manage Udhar State
   const [selectedCustomer, setSelectedCustomer] = useState<typeof customers[0] | null>(null);
@@ -36,12 +36,26 @@ export default function KhataPage() {
   const totalPayable = Math.abs(customers.reduce((acc, c) => acc + (c.totalCredit < 0 ? c.totalCredit : 0), 0));
   const netBalance = totalReceivable - totalPayable;
 
-  const handleAddCustomer = (e: React.FormEvent) => {
+  const handleAddCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCustomer.name) return;
-    addCustomer(newCustomer);
-    setNewCustomer({ name: "", phone: "" });
+    setIsSubmitting(true);
+    
+    const newId = await addCustomer({ name: newCustomer.name, phone: newCustomer.phone });
+    
+    if (newCustomer.initialAmount && Number(newCustomer.initialAmount) > 0) {
+      await addCreditTransaction({
+        customerId: newId as string,
+        amount: Number(newCustomer.initialAmount),
+        type: newCustomer.udharType,
+        description: "Opening Balance",
+        date: new Date().toISOString(),
+      });
+    }
+
+    setNewCustomer({ name: "", phone: "", initialAmount: "", udharType: "give" });
     setIsAddingCustomer(false);
+    setIsSubmitting(false);
   };
 
   const handleAddUdhar = async (e: React.FormEvent) => {
@@ -332,17 +346,60 @@ export default function KhataPage() {
             </DialogHeader>
             <form onSubmit={handleAddCustomer} className="space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Name</Label>
+                <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Party Name</Label>
                 <Input 
-                  placeholder="Rahul Sharma" 
+                  placeholder="e.g. Rahul Sharma" 
                   className="rounded-xl h-12 bg-slate-50 dark:bg-slate-800 border-none px-4 text-sm font-semibold focus-visible:ring-1 focus-visible:ring-primary/30"
                   value={newCustomer.name}
                   onChange={e => setNewCustomer({...newCustomer, name: e.target.value})}
                   required
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone (Optional)</Label>
+              
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Pichla Udhar (Opening Balance)</Label>
+                
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setNewCustomer({...newCustomer, udharType: 'give'})}
+                    className={cn(
+                      "h-10 rounded-xl text-xs font-bold transition-all border",
+                      newCustomer.udharType === 'give' 
+                        ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 shadow-sm" 
+                        : "bg-slate-50 dark:bg-slate-800 border-transparent text-slate-500"
+                    )}
+                  >
+                    Maine Diye (Get)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewCustomer({...newCustomer, udharType: 'receive'})}
+                    className={cn(
+                      "h-10 rounded-xl text-xs font-bold transition-all border",
+                      newCustomer.udharType === 'receive' 
+                        ? "bg-rose-50 dark:bg-rose-500/10 border-rose-500 text-rose-600 dark:text-rose-400 shadow-sm" 
+                        : "bg-slate-50 dark:bg-slate-800 border-transparent text-slate-500"
+                    )}
+                  >
+                    Mujhe Mile (Give)
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-slate-400">{settings.currency}</span>
+                  <Input 
+                    type="number"
+                    placeholder="0" 
+                    className="rounded-xl h-12 bg-slate-50 dark:bg-slate-800 border-none pl-10 pr-4 text-base font-black focus-visible:ring-1 focus-visible:ring-primary/30"
+                    value={newCustomer.initialAmount}
+                    onChange={e => setNewCustomer({...newCustomer, initialAmount: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 pt-2">
+                <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number (Optional)</Label>
                 <Input 
                   placeholder="9876543210" 
                   className="rounded-xl h-12 bg-slate-50 dark:bg-slate-800 border-none px-4 text-sm font-semibold focus-visible:ring-1 focus-visible:ring-primary/30"
@@ -350,8 +407,12 @@ export default function KhataPage() {
                   onChange={e => setNewCustomer({...newCustomer, phone: e.target.value})}
                 />
               </div>
-              <Button type="submit" className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-md shadow-primary/10 mt-2">
-                Create Ledger
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-md shadow-primary/10 mt-4"
+              >
+                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Create Ledger"}
               </Button>
             </form>
           </DialogContent>

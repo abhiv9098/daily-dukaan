@@ -141,15 +141,17 @@ export function useHisaab(userId: string = "local-user") {
 
   // --- Customers & Khata ---
   const addCustomer = async (customer: Omit<Customer, "id" | "totalCredit" | "lastTransactionDate">) => {
+    const newId = crypto.randomUUID();
     const newCustomer: Customer = { 
       ...customer, 
-      id: crypto.randomUUID(), 
+      id: newId, 
       totalCredit: 0, 
       lastTransactionDate: new Date().toISOString() 
     };
     const updated = [newCustomer, ...customers];
     setCustomers(updated);
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updated));
+    return newId;
   };
 
   const addCreditTransaction = async (ct: Omit<CreditTransaction, "id">) => {
