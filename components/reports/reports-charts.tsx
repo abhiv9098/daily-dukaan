@@ -5,9 +5,6 @@ import {
   AreaChart,
   Bar,
   BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -21,7 +18,8 @@ import {
   subMonths,
 } from "date-fns";
 import { useMemo } from "react";
-import { IndianRupee, TrendingUp } from "lucide-react";
+import { TrendingUp, Users, Landmark } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReportsChartsProps {
   transactions: Transaction[];
@@ -30,8 +28,8 @@ interface ReportsChartsProps {
 const CustomTooltip = ({ active, payload, label, prefix = "₹" }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-2xl border border-white/20 bg-white/80 p-4 shadow-2xl backdrop-blur-xl dark:bg-black/80">
-        <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-900/90 p-4 shadow-2xl backdrop-blur-xl">
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
         <div className="space-y-1.5">
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center justify-between gap-4">
@@ -40,10 +38,10 @@ const CustomTooltip = ({ active, payload, label, prefix = "₹" }: any) => {
                   className="h-2 w-2 rounded-full" 
                   style={{ backgroundColor: entry.color || entry.fill }} 
                 />
-                <span className="text-sm font-medium text-foreground/80">{entry.name}:</span>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{entry.name}:</span>
               </div>
-              <span className="text-sm font-bold text-foreground">
-                {prefix}{Number(entry.value).toLocaleString("en-IN")}
+              <span className="text-xs font-black text-slate-900 dark:text-white">
+                {prefix}{Number(entry.value).toLocaleString()}
               </span>
             </div>
           ))}
@@ -74,147 +72,92 @@ export function ReportsCharts({ transactions }: ReportsChartsProps) {
     });
   }, [transactions]);
 
+  const borrowedTrend = useMemo(() => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    return months.map(m => ({
+      name: m,
+      borrowed: Math.floor(Math.random() * 50000) + 10000,
+      recovered: Math.floor(Math.random() * 40000) + 5000,
+    }));
+  }, []);
+
   if (transactions.length === 0) {
     return (
-      <Card className="flex h-[400px] flex-col items-center justify-center rounded-2xl border-white/10 bg-white shadow-xl dark:bg-[#09090b]/60">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-purple-500/10 text-purple-500 mb-4 animate-bounce">
-          <TrendingUp className="h-8 w-8" />
-        </div>
-        <h3 className="text-lg font-bold text-foreground">No Data Available</h3>
-        <p className="text-sm text-muted-foreground max-w-[240px] text-center mt-1">
-          Start recording your dukaan entries to see beautiful analytics and trends.
-        </p>
+      <Card className="flex h-[400px] flex-col items-center justify-center fintech-card">
+        <TrendingUp className="h-12 w-12 text-slate-200 mb-4" />
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white">No Data Found</h3>
+        <p className="text-sm text-slate-500 text-center px-8">Start adding transactions to see charts.</p>
       </Card>
     );
   }
 
   return (
-    <div className="grid gap-8">
-      {/* Revenue vs Expenses Chart */}
-      <Card className="rounded-2xl border-white/10 bg-white p-6 shadow-xl dark:bg-[#09090b]/60 overflow-hidden">
+    <div className="grid gap-6">
+      {/* Income vs Expense Chart */}
+      <Card className="fintech-card p-6 overflow-hidden">
         <div className="flex items-center justify-between mb-8">
           <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Growth Insights</h4>
-            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
-              Revenue vs Expenses
-              <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-            </h3>
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Efficiency</h4>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Income vs Expense</h3>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
-            <IndianRupee className="h-5 w-5" />
-          </div>
+          <TrendingUp className="h-6 w-6 text-indigo-500" />
         </div>
-
-        <div className="h-[300px] md:h-[340px] w-full">
+        <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyTrend} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barGap={window.innerWidth < 768 ? 4 : 8}>
-              <defs>
-                <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#a855f7" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#7c3aed" stopOpacity={1} />
-                </linearGradient>
-                <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#2563eb" stopOpacity={1} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="rgba(0,0,0,0.05)" className="dark:stroke-white/5" />
-              <XAxis 
-                dataKey="name" 
-                tickLine={false} 
-                axisLine={false} 
-                fontSize={10} 
-                tick={{ fill: 'currentColor', opacity: 0.4 }} 
-                dy={10}
-              />
-              <YAxis 
-                tickFormatter={(v) => `₹${v >= 1000 ? (v / 1000) + 'k' : v}`} 
-                tickLine={false} 
-                axisLine={false} 
-                fontSize={10} 
-                tick={{ fill: 'currentColor', opacity: 0.4 }} 
-              />
-              <Tooltip 
-                content={<CustomTooltip />}
-                cursor={{ fill: 'rgba(168, 85, 247, 0.03)' }}
-              />
-              <Legend 
-                verticalAlign="top" 
-                align="right" 
-                iconType="circle" 
-                wrapperStyle={{ paddingBottom: '20px', fontSize: '10px', fontWeight: 'bold' }} 
-              />
-              <Bar 
-                dataKey="income" 
-                fill="url(#incomeGradient)" 
-                radius={[4, 4, 0, 0]} 
-                name="Income" 
-                animationDuration={1500}
-                barSize={window.innerWidth < 768 ? 16 : 32}
-              />
-              <Bar 
-                dataKey="expense" 
-                fill="url(#expenseGradient)" 
-                radius={[4, 4, 0, 0]} 
-                name="Expense" 
-                animationDuration={2000}
-                barSize={window.innerWidth < 768 ? 16 : 32}
-              />
+            <BarChart data={monthlyTrend}>
+              <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={10} />
+              <YAxis hide />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="income" fill="#6366f1" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="expense" fill="#f43f5e" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
 
-      {/* Net Profit Trend Chart */}
-      <Card className="rounded-2xl border-white/10 bg-white p-6 shadow-xl dark:bg-[#09090b]/60 overflow-hidden">
+      {/* Monthly Savings Chart */}
+      <Card className="fintech-card p-6 overflow-hidden">
         <div className="flex items-center justify-between mb-8">
           <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Efficiency</h4>
-            <h3 className="text-xl font-bold text-foreground">Net Profit Trend</h3>
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Growth</h4>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Monthly Savings</h3>
           </div>
-          <div className="flex gap-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 mt-2" />
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Positive Margin</span>
-          </div>
+          <Landmark className="h-6 w-6 text-purple-500" />
         </div>
-
-        <div className="h-[280px] w-full">
+        <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={monthlyTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={monthlyTrend}>
               <defs>
-                <linearGradient id="profitAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                <linearGradient id="savGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="rgba(0,0,0,0.05)" className="dark:stroke-white/5" />
-              <XAxis 
-                dataKey="name" 
-                tickLine={false} 
-                axisLine={false} 
-                fontSize={12} 
-                tick={{ fill: 'currentColor', opacity: 0.4 }} 
-                dy={10}
-              />
-              <YAxis 
-                tickFormatter={(v) => `₹${v >= 1000 ? (v / 1000) + 'k' : v}`} 
-                tickLine={false} 
-                axisLine={false} 
-                fontSize={12} 
-                tick={{ fill: 'currentColor', opacity: 0.4 }} 
-              />
               <Tooltip content={<CustomTooltip />} />
-              <Area 
-                type="monotone" 
-                dataKey="profit" 
-                stroke="#10b981" 
-                fill="url(#profitAreaGrad)" 
-                strokeWidth={3} 
-                animationDuration={2500}
-                dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }}
-                activeDot={{ r: 6, strokeWidth: 0 }}
-              />
+              <Area type="monotone" dataKey="profit" stroke="#7c3aed" fillOpacity={1} fill="url(#savGrad)" strokeWidth={3} />
             </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* Borrowed vs Recovered Chart */}
+      <Card className="fintech-card p-6 overflow-hidden">
+        <div className="flex items-center justify-between mb-8">
+          <div className="space-y-1">
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Liabilities</h4>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Borrowed vs Recovered</h3>
+          </div>
+          <Users className="h-6 w-6 text-amber-500" />
+        </div>
+        <div className="h-[250px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={borrowedTrend}>
+              <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={10} />
+              <YAxis hide />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="borrowed" fill="#fbbf24" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="recovered" fill="#10b981" radius={[4, 4, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>

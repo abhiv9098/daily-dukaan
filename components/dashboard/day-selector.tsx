@@ -53,8 +53,8 @@ export function DaySelector() {
       </Button>
       
       <div className="flex flex-col items-center px-4">
-        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-          {isToday(currentDay) ? "Today" : format(currentDay, "EEEE")}
+        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
+          {isToday(currentDay) ? "Aaj (Today)" : format(currentDay, "EEEE")}
         </span>
         <span className="text-sm font-bold">
           {format(currentDay, "dd MMM yyyy")}

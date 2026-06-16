@@ -364,7 +364,7 @@ export default function LiabilitiesPage() {
                           <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
                             <div className="flex items-start gap-2">
                               <FileText className="h-4 w-4 text-indigo-400 mt-0.5" />
-                              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 italic leading-relaxed">"{borrow.notes}"</p>
+                              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 italic leading-relaxed">&quot;{borrow.notes}&quot;</p>
                             </div>
                           </div>
                         )}

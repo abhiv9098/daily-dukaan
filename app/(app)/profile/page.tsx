@@ -12,14 +12,16 @@ import {
   Shield, 
   FileJson,
   Upload,
-  Settings,
-  Store
+  Bell,
+  Camera,
+  Check
 } from "lucide-react";
 import { useHisaabContext } from "@/context/hisaab-context";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { settings, updateSettings, user } = useHisaabContext();
@@ -28,173 +30,139 @@ export default function ProfilePage() {
 
   const exportData = () => {
     const data: Record<string, string | null> = {};
-    const keys = [
-      "hisaab_transactions",
-      "hisaab_settings",
-      "hisaab_budgets",
-      "hisaab_savings",
-      "hisaab_customers",
-      "hisaab_credit_transactions"
-    ];
-    
-    keys.forEach(key => {
-      data[key] = localStorage.getItem(key);
-    });
-
+    const keys = ["hisaab_transactions", "hisaab_settings", "hisaab_budgets", "hisaab_savings", "hisaab_customers"];
+    keys.forEach(key => data[key] = localStorage.getItem(key));
     const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `dukaan_backup_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    URL.revokeObjectURL(url);
   };
 
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target?.result as string);
-        Object.entries(data).forEach(([key, value]) => {
-          if (value) localStorage.setItem(key, value as string);
-        });
-        alert("Backup restored successfully! The app will reload.");
-        window.location.reload();
-      } catch (err) {
-        alert("Failed to restore backup. Invalid file format.");
-      }
+      const data = JSON.parse(e.target?.result as string);
+      Object.entries(data).forEach(([key, val]) => val && localStorage.setItem(key, val as string));
+      window.location.reload();
     };
     reader.readAsText(file);
   };
 
-  const clearAllData = () => {
-    if (confirm("Are you sure? This will delete all your transactions and settings permanently.")) {
-      localStorage.clear();
-      window.location.reload();
-    }
-  };
-
   return (
-    <div className="space-y-8 pb-10">
-      {/* Profile Header */}
-      <section className="flex flex-col items-center pt-4">
+    <div className="space-y-8 pb-20">
+      {/* Premium Profile Header */}
+      <section className="flex flex-col items-center pt-8">
         <div className="relative">
-          <div className="h-24 w-24 rounded-[2.5rem] premium-gradient flex items-center justify-center text-white shadow-xl shadow-primary/30">
-            <User className="h-12 w-12" />
+          <div className="h-32 w-32 rounded-[2.5rem] purple-gradient flex items-center justify-center text-white shadow-2xl shadow-purple-500/20 relative group overflow-hidden">
+            <User className="h-16 w-16" />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+               <Camera className="h-6 w-6 text-white" />
+            </div>
           </div>
-          <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-background border-4 border-background flex items-center justify-center shadow-md">
-             <div className="h-4 w-4 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="absolute -bottom-2 -right-2 h-10 w-10 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-lg border-4 border-slate-50 dark:border-slate-900">
+             <Check className="h-5 w-5 text-emerald-500" strokeWidth={3} />
           </div>
         </div>
-        <h2 className="mt-4 text-2xl font-bold tracking-tight">Premium Merchant</h2>
-        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">{user?.email || "Offline Local Account"}</p>
+        <div className="mt-6 text-center">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Premium Merchant</h2>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-1">{user?.email || "Abhishek Sharma"}</p>
+        </div>
       </section>
 
-      {/* Preferences Section */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest pl-1">Preferences</h3>
-        <Card className="glass-card border-none overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border/50">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-primary"><Moon className="h-5 w-5" /></div>
-              <span className="font-bold text-sm">Dark Appearance</span>
+      {/* Settings Grid */}
+      <div className="grid gap-6">
+        {/* Appearance & Security */}
+        <section className="space-y-3 px-1">
+          <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Account Settings</h3>
+          <div className="fintech-card overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400"><Moon className="h-5 w-5" /></div>
+                <span className="font-bold text-sm">Dark Mode</span>
+              </div>
+              <button onClick={() => updateSettings({ darkMode: !settings.darkMode })} className={cn("w-12 h-6 rounded-full relative transition-colors", settings.darkMode ? "bg-primary" : "bg-slate-200")}>
+                <motion.div animate={{ x: settings.darkMode ? 24 : 4 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+              </button>
             </div>
-            <button 
-              onClick={() => updateSettings({ darkMode: !settings.darkMode })}
-              className={`w-12 h-7 rounded-full transition-all duration-300 ${settings.darkMode ? 'bg-primary' : 'bg-secondary'} relative`}
-            >
-              <motion.span 
-                animate={{ x: settings.darkMode ? 20 : 0 }}
-                className="absolute top-1 left-1 bg-white w-5 h-5 rounded-full shadow-md"
-              />
+
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400"><Shield className="h-5 w-5" /></div>
+                <span className="font-bold text-sm">App Lock (PIN)</span>
+              </div>
+              <button onClick={() => updateSettings({ appLockEnabled: !settings.appLockEnabled })} className={cn("w-12 h-6 rounded-full relative transition-colors", settings.appLockEnabled ? "bg-primary" : "bg-slate-200")}>
+                <motion.div animate={{ x: settings.appLockEnabled ? 24 : 4 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between p-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400"><Globe className="h-5 w-5" /></div>
+                <span className="font-bold text-sm">Language</span>
+              </div>
+              <div className="flex gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl">
+                 <button className="px-3 py-1 text-[10px] font-black rounded-lg bg-white shadow-sm">EN</button>
+                 <button className="px-3 py-1 text-[10px] font-black rounded-lg text-slate-400">HI</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Notifications (Mocked) */}
+        <section className="space-y-3 px-1">
+          <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Notifications</h3>
+          <div className="fintech-card p-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400"><Bell className="h-5 w-5" /></div>
+              <div className="space-y-0.5">
+                <span className="font-bold text-sm block">Daily Reminder</span>
+                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Enabled</span>
+              </div>
+            </div>
+            <button className="w-12 h-6 rounded-full bg-primary relative"><div className="absolute top-1 right-1 w-4 h-4 bg-white rounded-full" /></button>
+          </div>
+        </section>
+
+        {/* Backup & Data */}
+        <section className="space-y-3 px-1">
+          <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Data Center</h3>
+          <div className="fintech-card overflow-hidden">
+            <button onClick={exportData} className="w-full flex items-center justify-between p-5 border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-primary"><FileJson className="h-5 w-5" /></div>
+                <span className="font-bold text-sm text-slate-700 dark:text-slate-300">Backup JSON</span>
+              </div>
+              <CloudDownload className="h-4 w-4 text-slate-300" />
+            </button>
+            <button onClick={() => fileInputRef.current?.click()} className="w-full flex items-center justify-between p-5 border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-primary"><Upload className="h-5 w-5" /></div>
+                <span className="font-bold text-sm text-slate-700 dark:text-slate-300">Restore Data</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-slate-300" />
+            </button>
+            <input type="file" ref={fileInputRef} onChange={importData} className="hidden" accept=".json" />
+            <button className="w-full flex items-center justify-between p-5 hover:bg-rose-50 transition-colors">
+               <div className="flex items-center gap-3">
+                 <div className="h-10 w-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-500"><Trash2 className="h-5 w-5" /></div>
+                 <span className="font-bold text-sm text-rose-500">Reset Application</span>
+               </div>
+               <span className="text-[9px] font-black text-rose-300 uppercase">Warning</span>
             </button>
           </div>
-
-          <div className="flex items-center justify-between p-4 border-b border-border/50">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-primary"><Shield className="h-5 w-5" /></div>
-              <span className="font-bold text-sm">App Lock (PIN)</span>
-            </div>
-            <button 
-              onClick={() => {
-                const newValue = !settings.appLockEnabled;
-                updateSettings({ appLockEnabled: newValue });
-                localStorage.setItem("hisaab_app_lock_enabled", newValue.toString());
-              }}
-              className={`w-12 h-7 rounded-full transition-all duration-300 ${settings.appLockEnabled ? 'bg-primary' : 'bg-secondary'} relative`}
-            >
-              <motion.span 
-                animate={{ x: settings.appLockEnabled ? 20 : 0 }}
-                className="absolute top-1 left-1 bg-white w-5 h-5 rounded-full shadow-md"
-              />
-            </button>
-          </div>
-
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-primary"><Globe className="h-5 w-5" /></div>
-              <span className="font-bold text-sm">Language</span>
-            </div>
-            <div className="flex gap-1 bg-secondary/50 rounded-xl p-1">
-              <button className="px-4 py-1.5 text-[10px] font-black rounded-lg bg-white shadow-sm">EN</button>
-              <button className="px-4 py-1.5 text-[10px] font-black rounded-lg text-muted-foreground">HI</button>
-            </div>
-          </div>
-        </Card>
+        </section>
       </div>
 
-      {/* Data Management */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest pl-1">Data & Security</h3>
-        <Card className="glass-card border-none overflow-hidden">
-          <button onClick={exportData} className="w-full flex items-center justify-between p-4 border-b border-border/50 hover:bg-secondary/30 transition-colors text-left group">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-primary"><FileJson className="h-5 w-5" /></div>
-              <span className="font-bold text-sm">Backup to JSON File</span>
-            </div>
-            <CloudDownload className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-          </button>
-          
-          <button onClick={() => fileInputRef.current?.click()} className="w-full flex items-center justify-between p-4 border-b border-border/50 hover:bg-secondary/30 transition-colors text-left group">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-primary"><Upload className="h-5 w-5" /></div>
-              <span className="font-bold text-sm">Restore from Backup</span>
-            </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-          </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={importData} 
-            accept=".json" 
-            className="hidden" 
-          />
-          
-          <button onClick={clearAllData} className="w-full flex items-center justify-between p-4 hover:bg-rose-500/5 transition-colors text-left group">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center"><Trash2 className="h-5 w-5" /></div>
-              <span className="font-bold text-sm text-rose-500">Reset All Data</span>
-            </div>
-            <span className="text-[10px] font-black text-rose-500/50 uppercase">Danger</span>
-          </button>
-        </Card>
-      </div>
-
-      {/* Sign Out */}
-      <div className="pt-4">
-         <Button 
-           variant="secondary" 
-           onClick={() => router.push('/login')} 
-           className="w-full h-14 rounded-2xl font-bold bg-secondary hover:bg-muted border border-border/50 shadow-sm"
-         >
-           <LogOut className="h-5 w-5 mr-2" /> Sign Out
-         </Button>
-         <p className="mt-4 text-center text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em]">Dukaan Premium v2.0</p>
+      <div className="px-1 pt-4 pb-10">
+        <Button variant="ghost" onClick={() => router.push('/login')} className="w-full h-14 rounded-2xl bg-slate-100 dark:bg-white/5 font-black text-slate-600 dark:text-slate-400">
+           <LogOut className="h-5 w-5 mr-2" /> Log Out
+        </Button>
+        <p className="text-center text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mt-8">Dukaan Premium v2.5</p>
       </div>
     </div>
   );
 }
-

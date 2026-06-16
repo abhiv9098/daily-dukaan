@@ -2,18 +2,30 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDownLeft, ArrowUpRight, Check, ChevronDown, User, Loader2, AlertTriangle } from "lucide-react";
+import { 
+  ArrowDownLeft, 
+  ArrowUpRight, 
+  Check, 
+  User, 
+  Loader2, 
+  Calendar, 
+  Camera, 
+  Paperclip, 
+  CreditCard, 
+  Banknote, 
+  Smartphone,
+  Landmark
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useHisaabContext } from "@/context/hisaab-context";
 import { useLanguage } from "@/context/language-context";
-import { getCategoriesForType, PAYMENT_MODES, CATEGORY_DETAILS, PAYMENT_MODE_DETAILS } from "@/lib/constants";
+import { getCategoriesForType } from "@/lib/constants";
 import { Category, PaymentMode, TransactionType } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 export function TransactionForm() {
   const router = useRouter();
@@ -26,13 +38,15 @@ export function TransactionForm() {
   const [category, setCategory] = useState<Category>("Sales");
   const [description, setDescription] = useState("");
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("Cash");
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [customerName, setCustomerName] = useState("");
   const [customerId, setCustomerId] = useState<string>("none");
+  const [receipt, setReceipt] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = getCategoriesForType(type);
 
   useEffect(() => {
-    // Focus amount input on mount
     amountInputRef.current?.focus();
   }, []);
 
@@ -42,17 +56,16 @@ export function TransactionForm() {
     if (!parsed || parsed <= 0) return;
 
     setIsSubmitting(true);
-    
-    // Simulate slight delay for premium feel
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise(resolve => setTimeout(resolve, 800));
 
     addTransaction({
       amount: parsed,
       type,
       category,
-      description: description.trim() || "Entry",
-      date: new Date().toISOString(),
+      description: description.trim() || (customerName.trim() ? "" : "Entry"),
+      date: new Date(date).toISOString(),
       paymentMode,
+      customerName: customerName.trim() || undefined,
       customerId: customerId === "none" ? undefined : customerId,
     });
 
@@ -61,26 +74,9 @@ export function TransactionForm() {
 
   const quickAmounts = [100, 500, 1000, 5000];
 
-  const handleQuickAmount = (val: number) => {
-    setAmount((prev) => {
-      const current = Number(prev) || 0;
-      return (current + val).toString();
-    });
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Shortcut to Loss & Borrowings */}
-      <div className="flex justify-center -mt-2 mb-4">
-        <Button variant="outline" asChild className="rounded-full h-9 px-4 text-xs font-bold border-rose-200/60 dark:border-rose-500/20 bg-rose-50/50 dark:bg-rose-500/10 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-500/20 hover:text-rose-600 transition-all border-dashed shadow-sm">
-          <Link href="/liabilities">
-            <AlertTriangle className="h-3.5 w-3.5 mr-2" />
-            Record Loss or Borrowing
-          </Link>
-        </Button>
-      </div>
-
-      {/* Type Toggle - Modern Segmented Control */}
+    <form onSubmit={handleSubmit} className="space-y-6 pb-20">
+      {/* Type Toggle */}
       <div className="relative flex bg-slate-100 dark:bg-white/5 p-1 rounded-2xl h-14 w-full max-w-sm mx-auto shadow-inner border border-slate-200/50 dark:border-white/5">
         <div className="relative flex w-full">
           <AnimatePresence initial={false}>
@@ -94,232 +90,198 @@ export function TransactionForm() {
               transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
             />
           </AnimatePresence>
-          
           <button
             type="button"
-            onClick={() => { setType("income"); setCategory("Sales"); }}
-            className={cn(
-              "relative z-10 flex-1 flex items-center justify-center gap-2 text-sm font-bold transition-colors duration-300",
-              type === 'income' ? 'text-white' : 'text-slate-500 dark:text-slate-400'
-            )}
+            onClick={() => setType("income")}
+            className={cn("relative z-10 flex-1 flex items-center justify-center gap-2 text-sm font-bold transition-colors", type === 'income' ? 'text-white' : 'text-slate-500')}
           >
-            <ArrowUpRight className={cn("h-4 w-4", type === 'income' ? 'text-white' : 'text-emerald-500')} />
-            {t("income")}
+            <ArrowUpRight className="h-4 w-4" /> Kamayi
           </button>
-          
           <button
             type="button"
-            onClick={() => { setType("expense"); setCategory("Stock"); }}
-            className={cn(
-              "relative z-10 flex-1 flex items-center justify-center gap-2 text-sm font-bold transition-colors duration-300",
-              type === 'expense' ? 'text-white' : 'text-slate-500 dark:text-slate-400'
-            )}
+            onClick={() => setType("expense")}
+            className={cn("relative z-10 flex-1 flex items-center justify-center gap-2 text-sm font-bold transition-colors", type === 'expense' ? 'text-white' : 'text-slate-500')}
           >
-            <ArrowDownLeft className={cn("h-4 w-4", type === 'expense' ? 'text-white' : 'text-rose-500')} />
-            {t("expense")}
+            <ArrowDownLeft className="h-4 w-4" /> Kharcha
           </button>
         </div>
       </div>
 
-      {/* Main Amount Focus Section */}
-      <div className="space-y-4">
-        <div className={cn(
-          "relative bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 shadow-2xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/5 transition-all duration-300",
-          "focus-within:ring-2 focus-within:ring-primary/20 focus-within:scale-[1.02]"
-        )}>
-          <div className="flex flex-col items-center gap-2">
-            <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Enter Amount</Label>
-            <div className="flex items-center justify-center w-full">
-              <span className="text-3xl font-bold text-slate-400 mr-2">{settings.currency}</span>
-              <input
-                ref={amountInputRef}
-                type="number"
-                placeholder="0"
-                className="w-full bg-transparent text-center text-5xl font-black outline-none border-none placeholder:text-slate-200 dark:placeholder:text-white/10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
+      {/* Amount Input Section */}
+      <div className={cn(
+        "fintech-card p-10 relative overflow-hidden transition-all duration-500",
+        type === 'income' ? "bg-emerald-50/30 dark:bg-emerald-500/5 border-emerald-100" : "bg-rose-50/30 dark:bg-rose-500/5 border-rose-100"
+      )}>
+        <div className="flex flex-col items-center gap-3 relative z-10">
+          <Label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Amount</Label>
+          <div className="flex items-center justify-center gap-2 w-full max-w-[320px]">
+            <span className={cn(
+              "text-2xl md:text-3xl font-black transition-colors duration-300 shrink-0",
+              type === 'income' ? "text-emerald-500/60" : "text-rose-500/60"
+            )}>{settings.currency}</span>
+            <input
+              ref={amountInputRef}
+              type="number"
+              placeholder="0"
+              className={cn(
+                "w-full bg-transparent text-center text-5xl md:text-6xl font-black outline-none border-none placeholder:text-slate-200 dark:placeholder:text-white/10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all duration-300",
+                type === 'income' ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+              )}
+              value={amount}
+              onChange={(e) => {
+                if (e.target.value.length <= 12) {
+                   setAmount(e.target.value);
+                }
+              }}
+            />
           </div>
         </div>
 
-        {/* Quick Amount Chips */}
-        <div className="flex flex-wrap justify-center gap-2">
+        {/* Quick Amount Chips - Elegant Row */}
+        <div className="flex flex-wrap justify-center gap-2 mt-10">
           {quickAmounts.map((val) => (
             <motion.button
               key={val}
               type="button"
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleQuickAmount(val)}
-              className="px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors shadow-sm"
+              whileTap={{ scale: 0.92 }}
+              onClick={() => setAmount((Number(amount) + val).toString())}
+              className={cn(
+                "px-5 py-2.5 rounded-2xl text-[11px] font-black tracking-tight transition-all duration-300 border shadow-sm",
+                type === 'income' 
+                  ? "bg-white dark:bg-slate-800 border-emerald-100 dark:border-emerald-500/20 text-emerald-600 hover:bg-emerald-50" 
+                  : "bg-white dark:bg-slate-800 border-rose-100 dark:border-rose-500/20 text-rose-600 hover:bg-rose-50"
+              )}
             >
-              +{settings.currency}{val}
+              +{settings.currency}{val.toLocaleString()}
             </motion.button>
           ))}
           <motion.button
             type="button"
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.92 }}
             onClick={() => setAmount("")}
-            className="px-4 py-2 rounded-full bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 text-sm font-bold text-rose-500 transition-colors shadow-sm"
+            className="px-5 py-2.5 rounded-2xl text-[11px] font-black tracking-tight bg-slate-900 dark:bg-white text-white dark:text-slate-900 border border-transparent shadow-sm"
           >
             Clear
           </motion.button>
         </div>
+
+        {/* Background Decorative Element */}
+        <div className={cn(
+          "absolute -right-10 -bottom-10 h-32 w-32 rounded-full blur-3xl opacity-20",
+          type === 'income' ? "bg-emerald-500" : "bg-rose-500"
+        )} />
       </div>
 
-      {/* Form Details Cards */}
+      {/* Details Grid */}
       <div className="grid gap-4">
-        {/* Category & Payment Mode */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-white/5 p-4 rounded-3xl border border-slate-100 dark:border-white/5 shadow-sm space-y-2">
-            <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-              <span className="h-1 w-1 rounded-full bg-primary" />
-              Category
-            </Label>
+          <div className="fintech-card p-5 space-y-2">
+            <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Calendar className="h-3 w-3 text-primary" /> Date</Label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 h-10 rounded-xl px-3 text-sm font-bold outline-none border-none" />
+          </div>
+          <div className="fintech-card p-5 space-y-2">
+            <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Paperclip className="h-3 w-3 text-primary" /> Category</Label>
             <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-              <SelectTrigger className="h-10 border-none bg-slate-50 dark:bg-white/5 rounded-xl font-bold px-3">
-                <div className="flex items-center gap-2">
-                  {category && CATEGORY_DETAILS[category] && (
-                    <div className={cn("p-1.5 rounded-lg", CATEGORY_DETAILS[category].bgColor)}>
-                      {(() => {
-                        const Icon = CATEGORY_DETAILS[category].icon;
-                        return <Icon className="h-3.5 w-3.5" style={{ color: CATEGORY_DETAILS[category].color }} />;
-                      })()}
-                    </div>
-                  )}
-                  <SelectValue />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-none shadow-2xl p-1">
-                {categories.map((cat) => {
-                  const details = CATEGORY_DETAILS[cat];
-                  const Icon = details?.icon || Check;
-                  return (
-                    <SelectItem key={cat} value={cat} className="rounded-xl my-0.5">
-                      <div className="flex items-center gap-3">
-                        <div className={cn("p-2 rounded-lg", details?.bgColor)}>
-                          <Icon className="h-4 w-4" style={{ color: details?.color }} />
-                        </div>
-                        <span className="font-semibold">{t(cat as any)}</span>
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="bg-white dark:bg-white/5 p-4 rounded-3xl border border-slate-100 dark:border-white/5 shadow-sm space-y-2">
-            <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-              <span className="h-1 w-1 rounded-full bg-primary" />
-              Mode
-            </Label>
-            <Select value={paymentMode} onValueChange={(v) => setPaymentMode(v as PaymentMode)}>
-              <SelectTrigger className="h-10 border-none bg-slate-50 dark:bg-white/5 rounded-xl font-bold px-3">
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const Icon = PAYMENT_MODE_DETAILS[paymentMode].icon;
-                    return <Icon className="h-3.5 w-3.5" style={{ color: PAYMENT_MODE_DETAILS[paymentMode].color }} />;
-                  })()}
-                  <SelectValue />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-none shadow-2xl p-1">
-                {PAYMENT_MODES.map((mode) => {
-                  const details = PAYMENT_MODE_DETAILS[mode];
-                  const Icon = details.icon;
-                  return (
-                    <SelectItem key={mode} value={mode} className="rounded-xl my-0.5">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-slate-100 dark:bg-white/10">
-                          <Icon className="h-4 w-4" style={{ color: details.color }} />
-                        </div>
-                        <span className="font-semibold">{mode}</span>
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
+              <SelectTrigger className="h-10 border-none bg-slate-50 dark:bg-white/5 rounded-xl font-bold px-3"><SelectValue /></SelectTrigger>
+              <SelectContent className="rounded-2xl">{categories.map(cat => <SelectItem key={cat} value={cat}>{t(cat as any)}</SelectItem>)}</SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* Customer Selector */}
-        <div className="bg-white dark:bg-white/5 p-4 rounded-3xl border border-slate-100 dark:border-white/5 shadow-sm space-y-2">
-          <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-            <span className="h-1 w-1 rounded-full bg-primary" />
-            Customer (Optional)
-          </Label>
-          <Select value={customerId} onValueChange={setCustomerId}>
-            <SelectTrigger className="h-12 border-none bg-slate-50 dark:bg-white/5 rounded-2xl font-bold px-4">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-                <SelectValue placeholder="Select Customer" />
-              </div>
-            </SelectTrigger>
-            <SelectContent className="rounded-2xl border-none shadow-2xl p-1">
-              <SelectItem value="none" className="rounded-xl my-0.5 font-semibold">No Customer</SelectItem>
-              {customers.map((c) => (
-                <SelectItem key={c.id} value={c.id} className="rounded-xl my-0.5 font-semibold">
-                  <div className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-[10px]">
-                      {c.name.charAt(0).toUpperCase()}
-                    </div>
-                    {c.name}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Payment Mode */}
+        <div className="fintech-card p-5 space-y-3">
+          <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Payment Method</Label>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { id: 'Cash', icon: Banknote, color: 'text-emerald-500' },
+              { id: 'UPI', icon: Smartphone, color: 'text-blue-500' },
+              { id: 'Bank', icon: Landmark, color: 'text-indigo-500' },
+              { id: 'Card', icon: CreditCard, color: 'text-purple-500' }
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => setPaymentMode(mode.id as PaymentMode)}
+                className={cn("flex flex-col items-center justify-center p-3 rounded-2xl gap-2 transition-all border", paymentMode === mode.id ? "bg-primary/5 border-primary shadow-sm" : "bg-slate-50 dark:bg-white/5 border-transparent opacity-60")}
+              >
+                <mode.icon className={cn("h-5 w-5", mode.color)} />
+                <span className="text-[10px] font-bold">{mode.id}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Notes */}
-        <div className="bg-white dark:bg-white/5 p-4 rounded-3xl border border-slate-100 dark:border-white/5 shadow-sm space-y-2">
-          <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-            <span className="h-1 w-1 rounded-full bg-primary" />
-            Notes
-          </Label>
-          <textarea
-            placeholder="Add some details..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full min-h-[80px] bg-slate-50 dark:bg-white/5 rounded-2xl p-4 text-sm font-semibold outline-none border-none resize-none focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-slate-300 dark:placeholder:text-white/10"
-          />
+        {/* Receipt Mockup */}
+        <div className="fintech-card p-5">
+          <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Receipt Upload</Label>
+          <label className="flex flex-col items-center justify-center w-full h-32 bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+            <Camera className="w-8 h-8 mb-2 text-slate-400" />
+            <p className="text-xs font-bold text-slate-500">{receipt ? receipt.name : "Tap to Scan Receipt"}</p>
+            <input type="file" className="hidden" onChange={(e) => setReceipt(e.target.files?.[0] || null)} />
+          </label>
+        </div>
+
+        {/* Customer & Notes */}
+        <div className="grid gap-4">
+           <div className="fintech-card p-5 space-y-2">
+              <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-primary" />
+                Party Name (Person Name)
+              </Label>
+              <Input 
+                placeholder="e.g. Rahul Sharma" 
+                className="h-12 border-none bg-slate-50 dark:bg-white/5 rounded-xl font-bold px-4 focus-visible:ring-1 focus-visible:ring-primary/20"
+                value={customerName}
+                onChange={e => setCustomerName(e.target.value)}
+              />
+           </div>
+
+           <div className="fintech-card p-5 space-y-2">
+              <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Link to Customer Ledger (Optional)</Label>
+              <Select value={customerId} onValueChange={setCustomerId}>
+                <SelectTrigger className="h-12 border-none bg-slate-50 dark:bg-white/5 rounded-xl font-bold px-4"><SelectValue placeholder="Select Customer" /></SelectTrigger>
+                <SelectContent className="rounded-2xl">
+                  <SelectItem value="none">None</SelectItem>
+                  {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+           </div>
+           
+           <div className="fintech-card p-5 space-y-2">
+              <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Notes</Label>
+              <textarea placeholder="Add some details..." value={description} onChange={(e) => setDescription(e.target.value)} className="w-full h-24 bg-slate-50 dark:bg-white/5 rounded-xl p-4 text-sm font-medium outline-none border-none resize-none" />
+           </div>
         </div>
       </div>
 
-      {/* Fixed Bottom Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 md:relative md:p-0 bg-white/80 dark:bg-black/80 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-slate-100 dark:border-white/5 md:border-none z-50">
-        <motion.div
-          whileTap={{ scale: 0.98 }}
-          className="max-w-2xl mx-auto"
-        >
+      {/* Save Action Button */}
+      <div className="pt-4 pb-12">
+        <motion.div whileTap={{ scale: 0.98 }}>
           <Button 
             type="submit" 
             disabled={isSubmitting || !amount}
             className={cn(
-              "w-full h-16 rounded-2xl text-lg font-black shadow-2xl transition-all duration-300",
+              "w-full h-16 rounded-[2rem] text-xl font-black shadow-2xl transition-all duration-300",
               type === 'income' 
                 ? "bg-gradient-to-r from-emerald-500 to-teal-600 shadow-emerald-500/20" 
-                : "bg-gradient-to-r from-purple-600 to-blue-600 shadow-primary/20",
-              "disabled:opacity-50 disabled:grayscale"
+                : "bg-gradient-to-r from-rose-500 to-red-600 shadow-rose-500/20",
+              "disabled:opacity-40 disabled:grayscale"
             )}
           >
             {isSubmitting ? (
               <Loader2 className="h-6 w-6 animate-spin" />
             ) : (
               <div className="flex items-center gap-2">
-                <Check className="h-6 w-6" />
-                <span>Save {type === 'income' ? 'Income' : 'Expense'}</span>
+                <Check className="h-6 w-6" strokeWidth={3} />
+                <span>Save Entry</span>
               </div>
             )}
           </Button>
         </motion.div>
+        <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">
+          Tap above to record this {type}
+        </p>
       </div>
     </form>
   );
 }
-
-

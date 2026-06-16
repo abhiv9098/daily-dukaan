@@ -98,6 +98,12 @@ export function useHisaab(userId: string = "local-user") {
     localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updated));
   };
 
+  const updateTransaction = async (id: string, updatedData: Partial<Transaction>) => {
+    const updated = transactions.map(t => t.id === id ? { ...t, ...updatedData } : t);
+    setTransactions(updated);
+    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updated));
+  };
+
   // --- Settings ---
   const updateSettings = async (newSettings: Partial<ShopSettings>) => {
     const updated = { ...settings, ...newSettings };

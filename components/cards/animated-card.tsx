@@ -40,7 +40,7 @@ export function AnimatedCard({ card, className }: AnimatedCardProps) {
       </div>
 
       <div className="space-y-1">
-        <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <h3 className="text-[10px] font-semibold tracking-tight text-muted-foreground/80">
           {card.title}
         </h3>
         <p className="text-xl font-bold tracking-tight text-foreground truncate">

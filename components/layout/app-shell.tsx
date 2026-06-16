@@ -5,39 +5,36 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
-  BarChart3, 
   User, 
   Plus, 
   Store, 
-  Wallet, 
   Users, 
   Target,
   FileText,
   Settings,
-  Bell
+  Bell,
+  BarChart3
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage } from "@/context/language-context";
 import { LanguageToggle } from "./language-toggle";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { t } = useLanguage();
+
 
   const navItems = [
     { icon: LayoutDashboard, label: "Home", href: "/" },
-    { icon: Users, label: "Khata", href: "/khata" },
-    { icon: Plus, label: "Add", href: "/add", isFab: true },
-    { icon: Wallet, label: "Budgets", href: "/reports" }, // Using reports as budget for now
+    { icon: Users, label: "Customers", href: "/khata" },
+    { icon: Plus, label: "Add Entry", href: "/add", isFab: true },
+    { icon: BarChart3, label: "Reports", href: "/reports" },
     { icon: User, label: "Profile", href: "/profile" },
   ];
 
   const sidebarItems = [
-    { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-    { icon: Users, label: "Customer Ledger", href: "/khata" },
-    { icon: Wallet, label: "Budgets", href: "/reports" },
+    { icon: LayoutDashboard, label: "Home", href: "/" },
+    { icon: Users, label: "Customers", href: "/khata" },
+    { icon: BarChart3, label: "Reports & Analytics", href: "/reports" },
     { icon: Target, label: "Savings Goals", href: "/savings" },
     { icon: FileText, label: "Invoices", href: "/invoice" },
     { icon: User, label: "My Profile", href: "/profile" },
@@ -135,19 +132,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-6 pb-6 pt-2">
-          <div className="bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-slate-200/50 dark:border-white/10 rounded-[2rem] shadow-2xl flex items-center justify-between h-16 px-2">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2">
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/50 dark:border-white/5 rounded-2xl shadow-xl flex items-center justify-between h-14 px-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               
               if (item.isFab) {
                 return (
-                  <div key={item.href} className="relative flex justify-center -mt-10">
+                  <div key={item.href} className="relative flex justify-center -mt-8">
                     <Link 
                       href={item.href} 
-                      className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white shadow-xl shadow-purple-500/40 active:scale-90 transition-all duration-300 border-4 border-white dark:border-slate-900"
+                      className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/30 active:scale-95 transition-all duration-300 border-4 border-white dark:border-slate-900"
                     >
-                      <Plus className="h-8 w-8" />
+                      <Plus className="h-7 w-7" />
                     </Link>
                   </div>
                 );
@@ -158,15 +155,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all duration-300 relative",
+                    "flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 relative",
                     isActive ? "text-primary" : "text-slate-400 hover:text-primary"
                   )}
                 >
                   <motion.div 
-                    animate={isActive ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
+                    animate={isActive ? { scale: 1.1, y: -1 } : { scale: 1, y: 0 }}
                     className={cn("p-1 transition-colors", isActive && "text-primary")}
                   >
-                     <item.icon className={cn("h-6 w-6")} strokeWidth={isActive ? 2.5 : 2} />
+                     <item.icon className={cn("h-5 w-5")} strokeWidth={isActive ? 2.5 : 2} />
                   </motion.div>
                   {isActive && (
                     <motion.div 

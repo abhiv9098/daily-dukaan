@@ -10,8 +10,9 @@ import { useFilterContext } from "@/context/filter-context";
 import { useFilteredTransactions } from "@/hooks/use-filtered-transactions";
 import { useLanguage } from "@/context/language-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Wallet, Trash2, ListFilter, Calendar } from "lucide-react";
+import { BarChart3, Trash2, ListFilter, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ExportToolbar } from "@/components/export/export-toolbar";
 
 export default function ReportsPage() {
   const { transactions, isLoaded, deleteTransactions } = useHisaabContext();
@@ -28,84 +29,94 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6 pb-10">
-      <div className="flex flex-col gap-1 px-1">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">
-           {language === "hi" ? "विश्लेषण और बजट" : "Analytics & Budgets"}
-        </h2>
-        <p className="text-sm text-muted-foreground">Detailed insights and expense planning.</p>
-      </div>
+    <div className="space-y-8 pb-20">
+      {/* Premium Header */}
+      <section className="px-1 pt-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Analysis & Reports</h2>
+            <p className="text-slate-500 font-medium text-sm">Grow your business with deep insights.</p>
+          </div>
+          <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 border border-indigo-100">
+             <BarChart3 className="h-6 w-6" />
+          </div>
+        </div>
+      </section>
 
-      <Tabs defaultValue="analytics" className="w-full">
-        <TabsList className="w-full grid grid-cols-2 h-14 bg-card/50 backdrop-blur-xl border-none rounded-2xl p-1 mb-6 shadow-sm">
+      <Tabs defaultValue="kamayi" className="w-full">
+        <TabsList className="w-full grid grid-cols-2 h-14 bg-slate-100 dark:bg-white/5 rounded-2xl p-1 mb-8">
           <TabsTrigger 
-            value="analytics" 
-            className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-bold flex items-center gap-2"
+            value="kamayi" 
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold"
           >
-            <BarChart3 className="h-4 w-4" />
-            Analytics
+            Kamayi
           </TabsTrigger>
           <TabsTrigger 
-            value="budgets" 
-            className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-bold flex items-center gap-2"
+            value="udhar" 
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold"
           >
-            <Wallet className="h-4 w-4" />
-            Budgets
+            Udhar
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="analytics" className="space-y-6 mt-0">
+        <TabsContent value="kamayi" className="space-y-8 mt-0">
+          {/* Quick Filters */}
           <section className="space-y-4">
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
-                <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Selected Period</h2>
+             <div className="flex items-center justify-between px-1">
+                <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Time Period</h3>
+                <div className="flex gap-2">
+                   {['Today', 'Week', 'Month', 'Year'].map(p => (
+                     <button key={p} className="text-[10px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors">{p}</button>
+                   ))}
+                </div>
+             </div>
+             <DaySelector />
+          </section>
+
+          {/* Export & Data Center */}
+          <section className="px-1">
+             <ExportToolbar />
+          </section>
+
+          {/* Core Analytics */}
+          <section className="space-y-6">
+            <ReportsSummary transactions={filtered.filter(t => t.type === 'income')} />
+          </section>
+
+          {/* Detailed Entries */}
+          <section className="space-y-4 px-1">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Income Ledger</h3>
+              <div className="flex gap-2">
+                <TransactionFiltersBar showSearch={false} />
+                {filtered.filter(t => t.type === 'income').length > 0 && (
+                  <Button variant="ghost" size="icon" onClick={handleDeleteAll} className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-50">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
-              <span className="text-[10px] font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
-                Quick Select
-              </span>
             </div>
-            <DaySelector />
-          </section>
-
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex-1">
-              <TransactionFiltersBar showSearch={false} />
+            <div className="fintech-card overflow-hidden">
+              <TransactionTable transactions={filtered.filter(t => t.type === 'income')} />
             </div>
-            {filtered.length > 0 && (
-              <Button 
-                variant="destructive" 
-                size="sm" 
-                onClick={handleDeleteAll}
-                className="rounded-full font-bold shadow-lg shadow-destructive/20 h-10 px-4"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete All
-              </Button>
-            )}
-          </div>
-          
-          <section>
-            <ReportsSummary transactions={filtered} />
-          </section>
-
-          <section className="glass-card overflow-hidden">
-            <div className="flex items-center gap-2 p-4 border-b border-border/50 bg-secondary/20">
-              <ListFilter className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Filtered Entries</h3>
-              <span className="ml-auto text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                {filtered.length} Records
-              </span>
-            </div>
-            <TransactionTable transactions={filtered} />
           </section>
         </TabsContent>
 
-        <TabsContent value="budgets" className="space-y-6 mt-0">
-          <BudgetsList />
+        <TabsContent value="udhar" className="space-y-8 mt-0">
+          {/* Detailed Entries */}
+          <section className="space-y-4 px-1">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Credit (Udhar) Ledger</h3>
+              <div className="flex gap-2">
+                <TransactionFiltersBar showSearch={false} />
+              </div>
+            </div>
+            <div className="fintech-card overflow-hidden">
+              <TransactionTable transactions={filtered.filter(t => !!t.customerName)} />
+            </div>
+          </section>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-

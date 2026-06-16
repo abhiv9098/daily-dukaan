@@ -20,7 +20,7 @@ export default function AddPage() {
         >
           <ChevronLeft className="h-6 w-6" />
         </Button>
-        <h1 className="text-lg font-bold tracking-tight">Add Entry</h1>
+        <h1 className="text-lg font-bold tracking-tight">Hisaab Likhein (Add)</h1>
         <div className="w-10" /> {/* Spacer */}
       </header>
 
