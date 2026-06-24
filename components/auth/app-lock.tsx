@@ -14,14 +14,17 @@ export function AppLock({ children }: AppLockProps) {
   const [pin, setPin] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState(false);
-
-  const CORRECT_PIN = "1234"; // Default PIN for now, can be changed in settings later
+  const [correctPin, setCorrectPin] = useState("1234");
 
   useEffect(() => {
     setIsMounted(true);
     const storedLock = localStorage.getItem("hisaab_app_lock_enabled");
     if (storedLock === "false") {
       setIsLocked(false);
+    }
+    const storedPin = localStorage.getItem("hisaab_app_lock_pin");
+    if (storedPin) {
+      setCorrectPin(storedPin);
     }
   }, []);
 
@@ -32,7 +35,7 @@ export function AppLock({ children }: AppLockProps) {
       setError(false);
 
       if (newPin.length === 4) {
-        if (newPin === CORRECT_PIN) {
+        if (newPin === correctPin) {
           setIsLocked(false);
         } else {
           setError(true);

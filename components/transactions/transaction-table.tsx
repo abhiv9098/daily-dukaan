@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, ArrowUpRight, ArrowDownLeft, FileText } from "lucide-react";
+import { Edit3, Trash2, ArrowUpRight, ArrowDownLeft, FileText, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Transaction } from "@/types";
@@ -15,8 +15,23 @@ interface TransactionTableProps {
 }
 
 export function TransactionTable({ transactions, showActions = true }: TransactionTableProps) {
-  const { deleteTransaction, settings } = useHisaabContext();
+  const { deleteTransaction, updateTransaction, settings } = useHisaabContext();
   const { t, language } = useLanguage();
+
+  const handleEdit = async (transaction: Transaction) => {
+    const newDescription = window.prompt("Update description", transaction.description || "")?.trim();
+    if (newDescription === undefined) return;
+
+    const newAmountValue = window.prompt("Update amount", String(transaction.amount));
+    if (newAmountValue === null) return;
+    const newAmount = Number(newAmountValue);
+    if (Number.isNaN(newAmount)) return;
+
+    await updateTransaction(transaction.id, {
+      description: newDescription,
+      amount: newAmount,
+    });
+  };
 
   if (transactions.length === 0) {
     return (
@@ -37,24 +52,24 @@ export function TransactionTable({ transactions, showActions = true }: Transacti
   }
 
   return (
-    <div className="w-full divide-y divide-border/60">
+    <div className="w-full divide-y divide-slate-200">
       {transactions.map((transaction, index) => (
         <motion.div 
           key={transaction.id} 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.03 }}
-          className="flex items-center justify-between p-3.5 sm:p-5 bg-card hover:bg-secondary/40 transition-all duration-300 group"
+          className="flex items-center justify-between gap-4 p-4 bg-white border-b border-slate-100"
         >
           <div className="flex items-center gap-4 min-w-0">
             <div
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                transaction.type === "income"
+                transaction.type === "income" || transaction.type === "payment"
                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                   : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
               } shadow-inner border border-transparent group-hover:border-current/10 transition-colors`}
             >
-              {transaction.type === "income" ? (
+              {transaction.type === "income" || transaction.type === "payment" ? (
                 <ArrowUpRight className="h-5 w-5" strokeWidth={2.5} />
               ) : (
                 <ArrowDownLeft className="h-5 w-5" strokeWidth={2.5} />
@@ -79,20 +94,27 @@ export function TransactionTable({ transactions, showActions = true }: Transacti
             </div>
           </div>
           
-          <div className="flex flex-col items-end gap-1.5 pl-3 shrink-0">
+          <div className="flex flex-col items-end gap-2 shrink-0">
             <p className={`text-base font-black tracking-tighter tabular-nums ${
-              transaction.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-900 dark:text-white"
+              transaction.type === "income" || transaction.type === "payment" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
             }`}>
-              {transaction.type === "income" ? "+" : "-"}
+              {transaction.type === "income" || transaction.type === "payment" ? "+" : "-"}
               {formatCurrency(transaction.amount, settings.currency)}
             </p>
             {showActions && (
-              <div className="flex items-center gap-1.5 md:opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-                 <ReceiptModal transaction={transaction} settings={settings} />
-                 <Button
+              <div className="flex items-center gap-2">
+                <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90"
+                  className="h-9 w-9 rounded-2xl text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition"
+                  onClick={() => handleEdit(transaction)}
+                >
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-2xl text-slate-400 hover:text-rose-500 hover:bg-rose-100 transition"
                   onClick={() => deleteTransaction(transaction.id)}
                 >
                   <Trash2 className="h-4 w-4" />

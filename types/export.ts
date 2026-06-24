@@ -5,6 +5,7 @@ export type ExportDataType =
   | "customers"
   | "bills"
   | "reports"
+  | "udhaar"
   | "complete";
 
 export type ExportFormat = "xlsx" | "pdf";

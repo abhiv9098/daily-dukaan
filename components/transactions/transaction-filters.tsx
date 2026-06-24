@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { useFilterContext } from "@/context/filter-context";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_MODES } from "@/lib/constants";
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, UDHAAR_CATEGORIES, PAYMENT_MODES } from "@/lib/constants";
 import { Category } from "@/types";
 import { cn } from "@/lib/utils";
 
-const ALL_CATEGORIES: Category[] = [...new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES])];
+const ALL_CATEGORIES: Category[] = [...new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES, ...UDHAAR_CATEGORIES])];
 
 export function TransactionFiltersBar({ showSearch = true }: { showSearch?: boolean }) {
   const { filters, setFilters, resetFilters } = useFilterContext();
@@ -70,6 +70,7 @@ export function TransactionFiltersBar({ showSearch = true }: { showSearch?: bool
                         <SelectItem value="all">All Types</SelectItem>
                         <SelectItem value="income">Income</SelectItem>
                         <SelectItem value="expense">Expense</SelectItem>
+                        <SelectItem value="udhaar">Udhaar</SelectItem>
                       </SelectContent>
                     </Select>
                 </div>

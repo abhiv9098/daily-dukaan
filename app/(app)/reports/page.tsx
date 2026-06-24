@@ -22,9 +22,13 @@ export default function ReportsPage() {
 
   if (!isLoaded) return null;
 
-  const handleDeleteAll = () => {
-    if (confirm(`Are you sure you want to delete all ${filtered.length} filtered transactions?`)) {
-      deleteTransactions(filtered.map(t => t.id));
+  const handleDeleteAll = (type?: 'income' | 'expense') => {
+    const listToDelete = type 
+      ? filtered.filter(t => t.type === type) 
+      : filtered;
+    
+    if (confirm(`Are you sure you want to delete all ${listToDelete.length} filtered transactions?`)) {
+      deleteTransactions(listToDelete.map(t => t.id));
     }
   };
 
@@ -43,78 +47,101 @@ export default function ReportsPage() {
         </div>
       </section>
 
-      <Tabs defaultValue="kamayi" className="w-full">
-        <TabsList className="w-full grid grid-cols-2 h-14 bg-slate-100 dark:bg-white/5 rounded-2xl p-1 mb-8">
+      {/* Quick Filters */}
+      <section className="space-y-4">
+         <div className="flex items-center justify-between px-1">
+            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Time Period</h3>
+            <div className="flex gap-2">
+               {['Today', 'Week', 'Month', 'Year'].map(p => (
+                 <button key={p} className="text-[10px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors">{p}</button>
+               ))}
+            </div>
+         </div>
+         <DaySelector />
+      </section>
+
+      {/* Export & Data Center */}
+      <section className="px-1">
+         <ExportToolbar />
+      </section>
+
+      {/* Core Analytics - Displays both Income and Expense summary */}
+      <section className="space-y-6">
+        <ReportsSummary transactions={filtered} />
+      </section>
+
+      {/* Tabbed Ledgers */}
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="w-full grid grid-cols-3 h-14 bg-slate-100 dark:bg-white/5 rounded-2xl p-1 mb-8">
           <TabsTrigger 
-            value="kamayi" 
-            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold"
+            value="all" 
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold text-xs"
+          >
+            All Ledger
+          </TabsTrigger>
+          <TabsTrigger 
+            value="income" 
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold text-xs"
           >
             Kamayi
           </TabsTrigger>
           <TabsTrigger 
-            value="udhar" 
-            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold"
+            value="expense" 
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold text-xs"
           >
-            Udhar
+            Kharcha
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="kamayi" className="space-y-8 mt-0">
-          {/* Quick Filters */}
-          <section className="space-y-4">
-             <div className="flex items-center justify-between px-1">
-                <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Time Period</h3>
-                <div className="flex gap-2">
-                   {['Today', 'Week', 'Month', 'Year'].map(p => (
-                     <button key={p} className="text-[10px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors">{p}</button>
-                   ))}
-                </div>
-             </div>
-             <DaySelector />
-          </section>
-
-          {/* Export & Data Center */}
-          <section className="px-1">
-             <ExportToolbar />
-          </section>
-
-          {/* Core Analytics */}
-          <section className="space-y-6">
-            <ReportsSummary transactions={filtered.filter(t => t.type === 'income')} />
-          </section>
-
-          {/* Detailed Entries */}
-          <section className="space-y-4 px-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Income Ledger</h3>
-              <div className="flex gap-2">
-                <TransactionFiltersBar showSearch={false} />
-                {filtered.filter(t => t.type === 'income').length > 0 && (
-                  <Button variant="ghost" size="icon" onClick={handleDeleteAll} className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-50">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+        <TabsContent value="all" className="space-y-4 px-1 mt-0">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">All Cashbook Entries</h3>
+            <div className="flex gap-2">
+              <TransactionFiltersBar showSearch={false} />
+              {filtered.length > 0 && (
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteAll()} className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-50">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-            <div className="fintech-card overflow-hidden">
-              <TransactionTable transactions={filtered.filter(t => t.type === 'income')} />
-            </div>
-          </section>
+          </div>
+          <div className="fintech-card overflow-hidden">
+            <TransactionTable transactions={filtered} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="udhar" className="space-y-8 mt-0">
-          {/* Detailed Entries */}
-          <section className="space-y-4 px-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Credit (Udhar) Ledger</h3>
-              <div className="flex gap-2">
-                <TransactionFiltersBar showSearch={false} />
-              </div>
+        <TabsContent value="income" className="space-y-4 px-1 mt-0">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Income Ledger</h3>
+            <div className="flex gap-2">
+              <TransactionFiltersBar showSearch={false} />
+              {filtered.filter(t => t.type === 'income').length > 0 && (
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteAll('income')} className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-50">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-            <div className="fintech-card overflow-hidden">
-              <TransactionTable transactions={filtered.filter(t => !!t.customerName)} />
+          </div>
+          <div className="fintech-card overflow-hidden">
+            <TransactionTable transactions={filtered.filter(t => t.type === 'income')} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="expense" className="space-y-4 px-1 mt-0">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Expense Ledger</h3>
+            <div className="flex gap-2">
+              <TransactionFiltersBar showSearch={false} />
+              {filtered.filter(t => t.type === 'expense').length > 0 && (
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteAll('expense')} className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-50">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-          </section>
+          </div>
+          <div className="fintech-card overflow-hidden">
+            <TransactionTable transactions={filtered.filter(t => t.type === 'expense')} />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

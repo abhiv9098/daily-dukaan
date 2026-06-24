@@ -148,28 +148,113 @@ export function useHisaab(userId: string = "local-user") {
       totalCredit: 0, 
       lastTransactionDate: new Date().toISOString() 
     };
-    const updated = [newCustomer, ...customers];
-    setCustomers(updated);
-    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updated));
+    
+    setCustomers(prev => {
+      const updated = [newCustomer, ...prev];
+      localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updated));
+      return updated;
+    });
+    
     return newId;
   };
 
   const addCreditTransaction = async (ct: Omit<CreditTransaction, "id">) => {
-    const newCT: CreditTransaction = { ...ct, id: crypto.randomUUID() };
-    const updatedCT = [newCT, ...creditTransactions];
-    setCreditTransactions(updatedCT);
-    localStorage.setItem(STORAGE_KEYS.CREDIT_TRANSACTIONS, JSON.stringify(updatedCT));
-
-    // Update customer balance
-    const updatedCustomers = customers.map(c => {
-      if (c.id === ct.customerId) {
-        const amountChange = ct.type === 'give' ? ct.amount : -ct.amount;
-        return { ...c, totalCredit: c.totalCredit + amountChange, lastTransactionDate: ct.date };
-      }
-      return c;
+    const newId = crypto.randomUUID();
+    const newCT: CreditTransaction = { ...ct, id: newId };
+    
+    setCreditTransactions(prev => {
+      const updated = [newCT, ...prev];
+      localStorage.setItem(STORAGE_KEYS.CREDIT_TRANSACTIONS, JSON.stringify(updated));
+      return updated;
     });
+
+    let customerName = "Customer";
+    // Update customer balance using functional update to ensure we have latest customers
+    setCustomers(prev => {
+      const updated = prev.map(c => {
+        if (c.id === ct.customerId) {
+          customerName = c.name;
+          const amountChange = ct.type === 'give' ? ct.amount : -ct.amount;
+          return { ...c, totalCredit: c.totalCredit + amountChange, lastTransactionDate: ct.date };
+        }
+        return c;
+      });
+      localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updated));
+      return updated;
+    });
+
+    // Add to cashbook transactions automatically
+    const isGive = ct.type === 'give';
+    const newTransaction: Transaction = {
+      id: newId, // Link using same ID
+      amount: ct.amount,
+      type: isGive ? 'udhaar' : 'payment',
+      category: isGive ? 'Credit' : 'Payment',
+      description: ct.description || (isGive ? `Udhar to ${customerName}` : `Payment from ${customerName}`),
+      date: ct.date,
+      paymentMode: 'Cash',
+    };
+
+    setTransactions(prev => {
+      const updated = [newTransaction, ...prev];
+      localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const deleteCreditTransaction = async (id: string) => {
+    let deletedTransaction: CreditTransaction | undefined;
+
+    setCreditTransactions(prev => {
+      const updated = prev.filter((ct) => {
+        if (ct.id === id) {
+          deletedTransaction = ct;
+          return false;
+        }
+        return true;
+      });
+      localStorage.setItem(STORAGE_KEYS.CREDIT_TRANSACTIONS, JSON.stringify(updated));
+      return updated;
+    });
+
+    // Delete linked cashbook transaction
+    setTransactions(prev => {
+      const updated = prev.filter(t => t.id !== id);
+      localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updated));
+      return updated;
+    });
+
+    if (!deletedTransaction) return;
+
+    setCustomers(prev => {
+      const updated = prev.map(c => {
+        if (c.id === deletedTransaction?.customerId) {
+          const amountChange = deletedTransaction.type === 'give' ? -deletedTransaction.amount : deletedTransaction.amount;
+          return { ...c, totalCredit: c.totalCredit + amountChange };
+        }
+        return c;
+      });
+      localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const deleteCustomer = async (id: string) => {
+    const deletedCreditIds = creditTransactions.filter(ct => ct.customerId === id).map(ct => ct.id);
+
+    const updatedCustomers = customers.filter((c) => c.id !== id);
+    const updatedCredits = creditTransactions.filter((ct) => ct.customerId !== id);
     setCustomers(updatedCustomers);
+    setCreditTransactions(updatedCredits);
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updatedCustomers));
+    localStorage.setItem(STORAGE_KEYS.CREDIT_TRANSACTIONS, JSON.stringify(updatedCredits));
+
+    // Remove linked cashbook transactions
+    setTransactions(prev => {
+      const updated = prev.filter(t => !deletedCreditIds.includes(t.id));
+      localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // --- Losses ---
@@ -232,10 +317,14 @@ export function useHisaab(userId: string = "local-user") {
         totalIncome += amount;
         if (isToday(date)) todayIncome += amount;
         if (isSameMonth(date, now)) monthlyIncome += amount;
-      } else {
+      } else if (t.type === "expense") {
         totalExpense += amount;
         if (isToday(date)) todayExpense += amount;
         if (isSameMonth(date, now)) monthlyExpense += amount;
+      } else if (t.type === "udhaar") {
+        // Udhaar given is money going out of cash box, 
+        // but it's still an asset, so we don't subtract it from 'Savings'
+        // We only track it separately in stats if needed
       }
     });
 
@@ -276,6 +365,7 @@ export function useHisaab(userId: string = "local-user") {
     addTransaction,
     deleteTransaction,
     deleteTransactions,
+    updateTransaction,
     updateSettings,
     addBudget,
     deleteBudget,
@@ -283,6 +373,8 @@ export function useHisaab(userId: string = "local-user") {
     updateSavingsProgress,
     addCustomer,
     addCreditTransaction,
+    deleteCreditTransaction,
+    deleteCustomer,
     addLoss,
     updateLoss,
     deleteLoss,

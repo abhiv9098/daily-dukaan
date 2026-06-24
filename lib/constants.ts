@@ -11,7 +11,8 @@ import {
   TrendingUp,
   CreditCard,
   Banknote,
-  Smartphone
+  Smartphone,
+  Check
 } from "lucide-react";
 
 export const EXPENSE_CATEGORIES: Category[] = [
@@ -27,6 +28,10 @@ export const EXPENSE_CATEGORIES: Category[] = [
 
 export const INCOME_CATEGORIES: Category[] = ["Sales", "Other"];
 
+export const UDHAAR_CATEGORIES: Category[] = ["Credit", "Other"];
+
+export const PAYMENT_CATEGORIES: Category[] = ["Payment", "Other"];
+
 export const CATEGORY_DETAILS: Record<string, { icon: any; color: string; bgColor: string }> = {
   Stock: { icon: Package, color: "#3b82f6", bgColor: "bg-blue-500/10" },
   Transport: { icon: Truck, color: "#f59e0b", bgColor: "bg-amber-500/10" },
@@ -36,6 +41,8 @@ export const CATEGORY_DETAILS: Record<string, { icon: any; color: string; bgColo
   Salary: { icon: Users, color: "#10b981", bgColor: "bg-emerald-500/10" },
   Personal: { icon: User, color: "#a855f7", bgColor: "bg-purple-500/10" },
   Sales: { icon: TrendingUp, color: "#10b981", bgColor: "bg-emerald-500/10" },
+  Credit: { icon: Users, color: "#3b82f6", bgColor: "bg-blue-500/10" },
+  Payment: { icon: Check, color: "#10b981", bgColor: "bg-emerald-500/10" },
   Other: { icon: MoreHorizontal, color: "#64748b", bgColor: "bg-slate-500/10" },
 };
 
@@ -50,9 +57,14 @@ export const PAYMENT_MODES: PaymentMode[] = ["Cash", "UPI", "Bank"];
 export const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
   { value: "income", label: "Income" },
   { value: "expense", label: "Expense" },
+  { value: "udhaar", label: "Udhaar" },
+  { value: "payment", label: "Payment" },
 ];
 
 export function getCategoriesForType(type: TransactionType): Category[] {
-  return type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  if (type === "income") return INCOME_CATEGORIES;
+  if (type === "udhaar") return UDHAAR_CATEGORIES;
+  if (type === "payment") return PAYMENT_CATEGORIES;
+  return EXPENSE_CATEGORIES;
 }
 

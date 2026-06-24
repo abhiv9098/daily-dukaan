@@ -40,6 +40,7 @@ export const translations = {
     type: "Type",
     income: "Income",
     expense: "Expense",
+    udhaar: "Udhaar",
     save: "Save",
     cancel: "Cancel",
     
@@ -53,6 +54,7 @@ export const translations = {
     Personal: "Personal",
     Other: "Other",
     Sales: "Sales",
+    Credit: "Credit",
     
     // Filters
     all: "All",
@@ -113,6 +115,7 @@ export const translations = {
     type: "प्रकार",
     income: "आय",
     expense: "खर्च",
+    udhaar: "उधार",
     save: "सहेजें",
     cancel: "रद्द करें",
     
@@ -126,6 +129,7 @@ export const translations = {
     Personal: "व्यक्तिगत",
     Other: "अन्य",
     Sales: "बिक्री",
+    Credit: "उधार",
     
     // Filters
     all: "सभी",

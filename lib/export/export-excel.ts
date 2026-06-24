@@ -61,6 +61,24 @@ function addCustomersSheet(wb: XLSX.WorkBook, bundle: ExportBundle) {
   XLSX.utils.book_append_sheet(wb, ws, "Customers");
 }
 
+function addUdhaarSheet(wb: XLSX.WorkBook, bundle: ExportBundle) {
+  const ws = XLSX.utils.aoa_to_sheet([...metaRows(bundle), ["Udhar Ledger (Customers Outstanding)"]]);
+  XLSX.utils.sheet_add_json(
+    ws,
+    bundle.customers.map((c) => ({
+      "Customer Name": c.name,
+      "Phone Number": c.phone,
+      "Total Udhar Given": c.totalPurchases,
+      "Total Visits/Entries": c.transactionCount,
+      "Last Active Date": c.lastVisit,
+      "Outstanding Balance": c.outstandingBalance,
+      "Status": c.outstandingBalance > 0 ? "Lena Hai" : c.outstandingBalance < 0 ? "Dena Hai" : "Settled"
+    })),
+    { origin: -1 }
+  );
+  XLSX.utils.book_append_sheet(wb, ws, "Udhar Ledger");
+}
+
 function addBillsSheet(wb: XLSX.WorkBook, bundle: ExportBundle) {
   const ws = XLSX.utils.aoa_to_sheet([...metaRows(bundle), ["Bills & Expenses"]]);
   XLSX.utils.sheet_add_json(
@@ -118,6 +136,9 @@ export function exportToExcel(bundle: ExportBundle, type: ExportDataType) {
     case "customers":
       addCustomersSheet(wb, bundle);
       break;
+    case "udhaar":
+      addUdhaarSheet(wb, bundle);
+      break;
     case "bills":
       addBillsSheet(wb, bundle);
       break;
@@ -128,6 +149,7 @@ export function exportToExcel(bundle: ExportBundle, type: ExportDataType) {
       addReportsSheet(wb, bundle);
       addTransactionsSheet(wb, bundle);
       addCustomersSheet(wb, bundle);
+      addUdhaarSheet(wb, bundle);
       addBillsSheet(wb, bundle);
       break;
   }

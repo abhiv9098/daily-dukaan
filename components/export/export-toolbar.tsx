@@ -34,6 +34,7 @@ const EXPORT_TYPES: { value: ExportDataType; label: string }[] = [
   { value: "transactions", label: "Transaction Ledger" },
   { value: "customers", label: "Customer List" },
   { value: "bills", label: "Bills & Expenses" },
+  { value: "udhaar", label: "Udhar Ledger" },
 ];
 
 interface ExportToolbarProps {
@@ -42,7 +43,7 @@ interface ExportToolbarProps {
 }
 
 export function ExportToolbar({ useFiltered = true, className }: ExportToolbarProps) {
-  const { transactions, stats, settings } = useHisaabContext();
+  const { transactions, stats, settings, customers, creditTransactions } = useHisaabContext();
   const { filters } = useFilterContext();
   const filtered = useFilteredTransactions(transactions, filters);
   const [exportType, setExportType] = useState<ExportDataType>("complete");
@@ -63,7 +64,9 @@ export function ExportToolbar({ useFiltered = true, className }: ExportToolbarPr
         stats,
         settings,
         filters,
-        type
+        type,
+        customers,
+        creditTransactions
       );
       if (format === "xlsx") {
         exportToExcel(bundle, type);

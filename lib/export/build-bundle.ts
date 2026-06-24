@@ -110,12 +110,26 @@ export function buildExportBundle(
   stats: DashboardStats,
   settings: { shopName: string; currency: string },
   filters: TransactionFilters,
-  exportType: ExportDataType
+  exportType: ExportDataType,
+  actualCustomers?: any[],
+  creditTransactions?: any[]
 ): ExportBundle {
   const isFiltered = hasActiveFilters(filters);
-  const customers = deriveCustomers(
-    exportType === "complete" ? allTransactions : transactions
-  );
+  const customers = actualCustomers && actualCustomers.length > 0
+    ? actualCustomers.map((c) => {
+        const customerTXs = (creditTransactions || []).filter(ct => ct.customerId === c.id);
+        const totalPurchases = customerTXs.filter(ct => ct.type === 'give').reduce((sum, ct) => sum + ct.amount, 0);
+        const transactionCount = customerTXs.length;
+        return {
+          name: c.name,
+          phone: c.phone || "—",
+          totalPurchases,
+          transactionCount,
+          lastVisit: c.lastTransactionDate ? formatDate(c.lastTransactionDate) : "—",
+          outstandingBalance: c.totalCredit,
+        };
+      })
+    : deriveCustomers(exportType === "complete" ? allTransactions : transactions);
   const bills = deriveBills(transactions);
   const categoryReport = buildCategoryReport(transactions);
 

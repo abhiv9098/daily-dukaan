@@ -86,6 +86,7 @@ export function exportToPdf(bundle: ExportBundle, type: ExportDataType) {
     customers: "Customer Records Export",
     bills: "Bills & Expenses Export",
     reports: "Business Report",
+    udhaar: "Udhar Ledger Export",
     complete: "Complete Business Export",
   };
 
@@ -157,6 +158,30 @@ export function exportToPdf(bundle: ExportBundle, type: ExportDataType) {
         formatCurrency(c.totalPurchases, currency),
         String(c.transactionCount),
         c.lastVisit,
+      ]),
+      theme: "striped",
+      headStyles: { fillColor: [37, 99, 235] },
+      styles: { fontSize: 9 },
+      margin: { left: 14, right: 14 },
+    });
+  }
+
+  if (type === "udhaar" || type === "complete") {
+    if (type === "complete") doc.addPage();
+    const startY = type === "udhaar" ? y : 20;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Udhar Ledger (Customers Outstanding)", 14, type === "udhaar" ? startY : 14);
+    autoTable(doc, {
+      startY: type === "udhaar" ? startY + 4 : 26,
+      head: [["Customer Name", "Phone", "Total Udhar Given", "Last Active Date", "Outstanding", "Status"]],
+      body: bundle.customers.map((c) => [
+        c.name,
+        c.phone,
+        formatCurrency(c.totalPurchases, currency),
+        c.lastVisit,
+        formatCurrency(Math.abs(c.outstandingBalance), currency),
+        c.outstandingBalance > 0 ? "Lena Hai" : c.outstandingBalance < 0 ? "Dena Hai" : "Settled"
       ]),
       theme: "striped",
       headStyles: { fillColor: [37, 99, 235] },

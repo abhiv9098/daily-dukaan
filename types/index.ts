@@ -1,4 +1,4 @@
-export type TransactionType = 'income' | 'expense';
+export type TransactionType = 'income' | 'expense' | 'udhaar' | 'payment';
 
 export type Category = 
   | 'Stock' 
@@ -9,7 +9,9 @@ export type Category =
   | 'Salary' 
   | 'Personal' 
   | 'Other'
-  | 'Sales';
+  | 'Sales'
+  | 'Credit'
+  | 'Payment';
 
 export type PaymentMode = 'Cash' | 'UPI' | 'Bank';
 
