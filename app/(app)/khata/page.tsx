@@ -148,14 +148,6 @@ export default function KhataPage() {
             >
               {filteredCustomers.length} Parties
             </motion.span>
-            <Link href="/udhar/add">
-              <button
-                type="button"
-                className="text-xs font-bold text-[#6D5DF6] hover:text-[#6D5DF6]/95 flex items-center gap-1 hover:bg-[#6D5DF6]/10 px-3 py-1.5 rounded-xl transition-all duration-200"
-              >
-                <Plus className="h-3.5 w-3.5" strokeWidth={2.5} /> Add Party
-              </button>
-            </Link>
           </div>
         </div>
 
@@ -196,16 +188,16 @@ export default function KhataPage() {
                         <div className="flex items-baseline gap-1.5 justify-end">
                           <p className={cn(
                             "font-black text-sm tracking-tight",
-                            customer.totalCredit > 0 ? "text-rose-600 dark:text-rose-400" : customer.totalCredit < 0 ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"
+                            customer.totalCredit > 0 ? "text-emerald-600 dark:text-emerald-400" : customer.totalCredit < 0 ? "text-rose-600 dark:text-rose-400" : "text-slate-400"
                           )}>
                             {formatCurrency(Math.abs(customer.totalCredit), settings.currency)}
                           </p>
                           <span className={cn(
                             "text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded whitespace-nowrap",
                             customer.totalCredit > 0 
-                              ? "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-455" 
+                              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
                               : customer.totalCredit < 0 
-                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                                ? "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-455" 
                                 : "bg-slate-100 dark:bg-slate-800 text-slate-500"
                           )}>
                             {customer.totalCredit > 0 ? "Lena" : customer.totalCredit < 0 ? "Dena" : "Settled"}
@@ -289,7 +281,7 @@ export default function KhataPage() {
               <div className="mt-4">
                 <p className={cn(
                   "text-4xl font-black tracking-tight",
-                  (selectedCustomer?.totalCredit || 0) > 0 ? "text-rose-400" : (selectedCustomer?.totalCredit || 0) < 0 ? "text-emerald-400" : "text-white"
+                  (selectedCustomer?.totalCredit || 0) > 0 ? "text-emerald-400" : (selectedCustomer?.totalCredit || 0) < 0 ? "text-rose-400" : "text-white"
                 )}>
                   {formatCurrency(Math.abs(selectedCustomer?.totalCredit || 0), settings.currency)}
                 </p>

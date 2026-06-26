@@ -210,7 +210,7 @@ export default function UdharPage() {
 
               <div className="flex items-center gap-3.5 shrink-0">
                 <div className="text-right">
-                  <div className={`text-sm font-black tracking-tight ${c.totalCredit > 0 ? 'text-rose-600 dark:text-rose-455' : c.totalCredit < 0 ? 'text-emerald-600 dark:text-emerald-450' : 'text-slate-500'}`}>
+                  <div className={`text-sm font-black tracking-tight ${c.totalCredit > 0 ? 'text-emerald-600 dark:text-emerald-450' : c.totalCredit < 0 ? 'text-rose-600 dark:text-rose-455' : 'text-slate-500'}`}>
                     {formatCurrency(Math.abs(c.totalCredit), settings.currency)}
                   </div>
                   <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block mt-1">

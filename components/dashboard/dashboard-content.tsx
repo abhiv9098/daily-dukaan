@@ -221,16 +221,6 @@ export function DashboardContent() {
               {filteredCustomers.length} Active {filteredCustomers.length === 1 ? "Party" : "Parties"}
             </p>
           </div>
-          
-          <Link href="/udhar/add">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-xs font-bold text-[#6D5DF6] hover:text-[#6D5DF6]/90 flex items-center gap-1 hover:bg-slate-100/50 dark:hover:bg-white/5 rounded-lg px-2 h-8"
-            >
-              <Plus className="h-3.5 w-3.5" /> Add Party
-            </Button>
-          </Link>
         </div>
 
         {/* Empty State Redesign */}
@@ -300,8 +290,8 @@ export function DashboardContent() {
                       <div className="text-right">
                         <div className={cn(
                           "text-sm font-black",
-                          isOwed ? "text-rose-600 dark:text-rose-400" : 
-                          isOwedUs ? "text-emerald-600 dark:text-emerald-400" : 
+                          isOwed ? "text-emerald-600 dark:text-emerald-400" : 
+                          isOwedUs ? "text-rose-600 dark:text-rose-400" : 
                           "text-slate-400"
                         )}>
                           {settings.currency} {Math.abs(c.totalCredit).toLocaleString()}
