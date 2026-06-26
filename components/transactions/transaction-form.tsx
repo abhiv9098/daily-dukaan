@@ -43,7 +43,6 @@ export function TransactionForm() {
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("Cash");
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
   const [customerId, setCustomerId] = useState<string>("none");
   const [receipt, setReceipt] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -262,25 +261,6 @@ export function TransactionForm() {
               />
            </div>
 
-           {customerName && (
-             <motion.div 
-               initial={{ opacity: 0, height: 0 }}
-               animate={{ opacity: 1, height: 'auto' }}
-               className="fintech-card p-5 space-y-2"
-             >
-                <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Smartphone className="h-3.5 w-3.5 text-primary" />
-                  Phone Number (Optional)
-                </Label>
-                <Input 
-                  type="tel"
-                  placeholder="9876543210" 
-                  className="h-12 border-none bg-slate-50 dark:bg-white/5 rounded-xl font-bold px-4 focus-visible:ring-1 focus-visible:ring-primary/20"
-                  value={customerPhone}
-                  onChange={e => setCustomerPhone(e.target.value)}
-                />
-             </motion.div>
-           )}
 
            <div className="fintech-card p-5 space-y-2">
               <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Link to Customer Ledger (Optional)</Label>
@@ -290,7 +270,6 @@ export function TransactionForm() {
                   const c = customers.find(cust => cust.id === v);
                   if (c) {
                     setCustomerName(c.name);
-                    setCustomerPhone(c.phone || "");
                   }
                 }
               }}>

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Plus, Search, Users, Phone, ChevronRight, ArrowUpRight, ArrowDownLeft, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useHisaabContext } from "@/context/hisaab-context";
 import { formatCurrency } from "@/lib/utils";
@@ -15,8 +16,6 @@ import { formatCurrency } from "@/lib/utils";
 export default function KhataPage() {
   const { customers, addCustomer, addCreditTransaction, deleteCustomer, deleteCreditTransaction, settings, creditTransactions } = useHisaabContext();
   const [search, setSearch] = useState("");
-  const [isAddingCustomer, setIsAddingCustomer] = useState(false);
-  const [newCustomer, setNewCustomer] = useState({ name: "", phone: "", initialAmount: "", udharType: "give" as "give" | "receive" });
 
   const [selectedCustomer, setSelectedCustomer] = useState<typeof customers[0] | null>(null);
   const [isManageUdharOpen, setIsManageUdharOpen] = useState(false);
@@ -38,27 +37,6 @@ export default function KhataPage() {
     return { totalReceivable: receive, totalPayable: pay, netBalance: receive - pay };
   }, [customers]);
 
-  const handleAddCustomer = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCustomer.name) return;
-    setIsSubmitting(true);
-    
-    const newId = await addCustomer({ name: newCustomer.name, phone: newCustomer.phone });
-    
-    if (newCustomer.initialAmount && Number(newCustomer.initialAmount) > 0) {
-      await addCreditTransaction({
-        customerId: newId as string,
-        amount: Number(newCustomer.initialAmount),
-        type: newCustomer.udharType,
-        description: "Opening Balance",
-        date: new Date().toISOString(),
-      });
-    }
-
-    setNewCustomer({ name: "", phone: "", initialAmount: "", udharType: "give" });
-    setIsAddingCustomer(false);
-    setIsSubmitting(false);
-  };
 
   const handleAddUdhar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,13 +148,14 @@ export default function KhataPage() {
             >
               {filteredCustomers.length} Parties
             </motion.span>
-            <button
-              type="button"
-              onClick={() => setIsAddingCustomer(true)}
-              className="text-xs font-bold text-[#6D5DF6] hover:text-[#6D5DF6]/95 flex items-center gap-1 hover:bg-[#6D5DF6]/10 px-3 py-1.5 rounded-xl transition-all duration-200"
-            >
-              <Plus className="h-3.5 w-3.5" strokeWidth={2.5} /> Add Party
-            </button>
+            <Link href="/udhar/add">
+              <button
+                type="button"
+                className="text-xs font-bold text-[#6D5DF6] hover:text-[#6D5DF6]/95 flex items-center gap-1 hover:bg-[#6D5DF6]/10 px-3 py-1.5 rounded-xl transition-all duration-200"
+              >
+                <Plus className="h-3.5 w-3.5" strokeWidth={2.5} /> Add Party
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -289,10 +268,12 @@ export default function KhataPage() {
               <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">No parties found</h3>
               <p className="text-xs text-slate-400 dark:text-slate-500 font-medium max-w-[250px] mx-auto mb-10 leading-relaxed">Start adding customers to log credit entries (Udhar) and track hisaab.</p>
               
-              <Button type="button" onClick={() => setIsAddingCustomer(true)} className="h-11 rounded-2xl font-bold bg-[#6D5DF6] hover:bg-[#6D5DF6]/95 text-white transition-all shadow-[0_4px_14px_rgba(109,93,246,0.3)] px-6 mt-2 animate-pulse-subtle" size="sm">
-                <Plus className="h-4 w-4 mr-2" strokeWidth={2.5} />
-                Add First Party
-              </Button>
+              <Link href="/udhar/add">
+                <Button type="button" className="h-11 rounded-2xl font-bold bg-[#6D5DF6] hover:bg-[#6D5DF6]/95 text-white transition-all shadow-[0_4px_14px_rgba(109,93,246,0.3)] px-6 mt-2 animate-pulse-subtle" size="sm">
+                  <Plus className="h-4 w-4 mr-2" strokeWidth={2.5} />
+                  Add First Party
+                </Button>
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
@@ -493,98 +474,16 @@ export default function KhataPage() {
       </Dialog>
 
       {/* Floating Action Button */}
-      <Dialog open={isAddingCustomer} onOpenChange={setIsAddingCustomer}>
-        <DialogTrigger asChild>
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
-            className="fixed bottom-20 right-6 h-14 w-14 rounded-full bg-[#6D5DF6] text-white flex items-center justify-center shadow-lg shadow-indigo-600/35 border border-white/20 z-40"
-          >
-            <Plus className="h-7 w-7" />
-          </motion.button>
-        </DialogTrigger>
-        <DialogContent className="border-none max-w-[90vw] sm:max-w-md rounded-3xl p-6 bg-white dark:bg-slate-900 shadow-2xl">
-          <DialogHeader className="mb-4">
-            <DialogTitle className="text-xl font-bold">New Customer Ledger</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleAddCustomer} className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Party Name</Label>
-              <Input 
-                placeholder="e.g. Rahul Sharma" 
-                className="rounded-xl h-12 bg-slate-100 dark:bg-slate-800 border-none px-4 text-sm font-medium focus-visible:ring-2 focus-visible:ring-indigo-500/30"
-                value={newCustomer.name}
-                onChange={e => setNewCustomer({...newCustomer, name: e.target.value})}
-                required
-                autoFocus
-              />
-            </div>
-            
-            <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-              <Label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Pichla Udhar (Opening Balance)</Label>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setNewCustomer({...newCustomer, udharType: 'give'})}
-                  className={cn(
-                    "h-10 rounded-xl text-xs font-bold transition-all border-2",
-                    newCustomer.udharType === 'give' 
-                      ? "bg-emerald-50 dark:bg-emerald-500/20 border-emerald-500 text-emerald-700 dark:text-emerald-400" 
-                      : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
-                  )}
-                >
-                  Maine Diye
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setNewCustomer({...newCustomer, udharType: 'receive'})}
-                  className={cn(
-                    "h-10 rounded-xl text-xs font-bold transition-all border-2",
-                    newCustomer.udharType === 'receive' 
-                      ? "bg-rose-50 dark:bg-rose-500/20 border-rose-500 text-rose-700 dark:text-rose-400" 
-                      : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
-                  )}
-                >
-                  Mujhe Mile
-                </button>
-              </div>
-
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">{settings.currency}</span>
-                <Input 
-                  type="number"
-                  placeholder="0" 
-                  className={cn(
-                    "rounded-xl h-12 bg-slate-100 dark:bg-slate-800 border-none pr-4 text-lg font-black focus-visible:ring-2 focus-visible:ring-indigo-500/30",
-                    settings.currency.length > 2 ? "pl-16" : settings.currency.length > 1 ? "pl-12" : "pl-10"
-                  )}
-                  value={newCustomer.initialAmount}
-                  onChange={e => setNewCustomer({...newCustomer, initialAmount: e.target.value})}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <Label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Phone Number (Optional)</Label>
-              <Input 
-                placeholder="9876543210" 
-                className="rounded-xl h-12 bg-slate-100 dark:bg-slate-800 border-none px-4 text-sm font-medium focus-visible:ring-2 focus-visible:ring-indigo-500/30"
-                value={newCustomer.phone}
-                onChange={e => setNewCustomer({...newCustomer, phone: e.target.value})}
-              />
-            </div>
-
-            <Button 
-              type="submit" 
-              disabled={isSubmitting || !newCustomer.name}
-              className="w-full h-12 rounded-xl text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 mt-6"
-            >
-              {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Add Party"}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <Link href="/udhar/add">
+        <motion.button
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          className="fixed bottom-20 right-6 h-14 w-14 rounded-full bg-[#6D5DF6] text-white flex items-center justify-center shadow-lg shadow-indigo-600/35 border border-white/20 z-40"
+          aria-label="Add entry"
+        >
+          <Plus className="h-7 w-7" />
+        </motion.button>
+      </Link>
     </div>
   );
 }
