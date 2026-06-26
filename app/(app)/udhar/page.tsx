@@ -76,9 +76,9 @@ export default function UdharPage() {
   const sortedCustomers = [...(customers || [])].sort((a,b) => (b.totalCredit || 0) - (a.totalCredit || 0));
 
   return (
-    <div className="min-h-screen pb-32 px-4 pt-6 bg-slate-50/50 dark:bg-background space-y-8">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-background space-y-4 pb-8">
       {/* Header */}
-      <header className="flex items-center justify-between px-1">
+      <header className="flex items-center justify-between px-1 pt-2">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Udhar Khata</h1>
           <p className="text-xs text-slate-400 dark:text-slate-550 font-semibold uppercase tracking-wider mt-0.5">Manage your collections</p>

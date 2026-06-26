@@ -77,12 +77,12 @@ export default function KhataPage() {
   };
 
   return (
-    <div className="relative min-h-screen pb-32 px-4">
+    <div className="relative min-h-screen pb-8">
       {/* Header Section with Balance */}
       <motion.section 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="pt-6 pb-6"
+        className="pt-2 pb-4"
       >
         <div className="relative overflow-hidden bg-gradient-to-tr from-[#6D5DF6]/10 to-[#818cf8]/5 dark:from-[#6D5DF6]/20 dark:to-slate-900 border border-indigo-100/40 dark:border-white/5 rounded-[24px] shadow-[0_8px_32px_rgba(109,93,246,0.04)] p-6 space-y-5">
           {/* Decorative background glow */}
@@ -102,17 +102,17 @@ export default function KhataPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-100 dark:border-white/5 rounded-2xl p-4 flex flex-col justify-between space-y-2 shadow-sm">
                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                  <ArrowDownLeft className="h-3.5 w-3.5 text-rose-500" />
+                  <ArrowDownLeft className="h-3.5 w-3.5 text-emerald-500" />
                   <span>LENA HAI</span>
                 </div>
-                <p className="text-lg font-black text-rose-600 dark:text-rose-400">{formatCurrency(totalReceivable, settings.currency)}</p>
+                <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(totalReceivable, settings.currency)}</p>
               </div>
               <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-100 dark:border-white/5 rounded-2xl p-4 flex flex-col justify-between space-y-2 shadow-sm">
                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                  <ArrowUpRight className="h-3.5 w-3.5 text-emerald-500" />
+                  <ArrowUpRight className="h-3.5 w-3.5 text-rose-500" />
                   <span>DENA HAI</span>
                 </div>
-                <p className="text-lg font-black text-emerald-600 dark:text-emerald-450">{formatCurrency(totalPayable, settings.currency)}</p>
+                <p className="text-lg font-black text-rose-600 dark:text-rose-455">{formatCurrency(totalPayable, settings.currency)}</p>
               </div>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function KhataPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="sticky top-4 z-30 mb-6"
+        className="sticky top-4 z-30 mb-4"
       >
         <div className="relative flex items-center bg-slate-100/50 dark:bg-slate-900/50 hover:bg-slate-100/80 dark:hover:bg-slate-900/80 focus-within:bg-white dark:focus-within:bg-slate-900 border border-transparent focus-within:border-[#6D5DF6]/30 dark:focus-within:border-[#6D5DF6]/50 rounded-2xl px-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] focus-within:shadow-[0_4px_20px_rgba(109,93,246,0.06)] transition-all duration-200">
           <Search className="h-4 w-4 text-slate-400 dark:text-slate-500 mr-3" />
@@ -138,8 +138,8 @@ export default function KhataPage() {
       </motion.section>
 
       {/* Customer List */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between px-1 mb-3">
+      <section className="space-y-3">
+        <div className="flex items-center justify-between px-1 mb-2">
           <h3 className="text-sm font-bold text-slate-905 dark:text-white">Party Wise Hisaab</h3>
           <div className="flex items-center gap-2">
             <motion.span 

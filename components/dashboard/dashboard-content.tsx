@@ -109,7 +109,7 @@ export function DashboardContent() {
     .map(([name, value]) => ({ name, value }));
 
   return (
-    <div className="space-y-6 pb-24 px-1 select-none">
+    <div className="space-y-4 select-none">
       
       {/* Greeting and Merchant Brand Info */}
       <section className="pt-2">
@@ -158,7 +158,7 @@ export function DashboardContent() {
           </div>
 
           {/* Quick Net Indicator Statement */}
-          <div className="text-[11px] text-slate-400 dark:text-slate-500 font-medium border-t border-indigo-100/30 dark:border-white/5 pt-4 flex items-center gap-1.5 relative z-10">
+          <div className="text-[11px] text-slate-400 dark:text-slate-550 font-medium border-t border-indigo-100/30 dark:border-white/5 pt-4 flex items-center gap-1.5 relative z-10">
             <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             Real-time balance tracking across active bookkeeping ledgers
           </div>
@@ -171,11 +171,11 @@ export function DashboardContent() {
                 <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-wider">
                   Lena Hai
                 </span>
-                <div className="h-7 w-7 rounded-lg bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center text-rose-600 dark:text-rose-455">
+                <div className="h-7 w-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-450">
                   <TrendingUp className="h-4 w-4" />
                 </div>
               </div>
-              <div className="text-lg font-black text-rose-700 dark:text-rose-400 truncate">
+              <div className="text-lg font-black text-emerald-700 dark:text-emerald-400 truncate">
                 {settings.currency}{lenaHai.toLocaleString()}
               </div>
             </div>
@@ -186,11 +186,11 @@ export function DashboardContent() {
                 <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-wider">
                   Dena Hai
                 </span>
-                <div className="h-7 w-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-450">
+                <div className="h-7 w-7 rounded-lg bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center text-rose-600 dark:text-rose-455">
                   <TrendingDown className="h-4 w-4" />
                 </div>
               </div>
-              <div className="text-lg font-black text-emerald-700 dark:text-emerald-400 truncate">
+              <div className="text-lg font-black text-rose-700 dark:text-rose-400 truncate">
                 {settings.currency}{denaHai.toLocaleString()}
               </div>
             </div>
