@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col min-w-0 h-full relative">
         {/* Top Header */}
-        <header className="shrink-0 h-14 md:h-20 flex items-center justify-between px-6 z-30">
+        <header className="shrink-0 h-14 md:h-20 hidden md:flex items-center justify-between px-6 z-30">
           <div className="flex items-center gap-2 md:hidden">
             <div className="h-8 w-8 rounded-lg premium-gradient flex items-center justify-center">
               <Store className="h-4 w-4 text-white" />
