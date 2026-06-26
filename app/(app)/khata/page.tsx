@@ -302,7 +302,7 @@ export default function KhataPage() {
                   {creditTransactions.filter(ct => ct.customerId === selectedCustomer.id).slice(0, 10).map((ct) => (
                     <div key={ct.id} className="flex items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                       <div className="min-w-0">
-                        <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">{ct.description || (ct.type === 'give' ? 'Maine Diye' : 'Mujhe Mile')}</div>
+                        <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">{ct.description || (ct.type === 'give' ? 'Lena Hai' : 'Dena Hai')}</div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{new Date(ct.date).toLocaleDateString()}</div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -334,23 +334,23 @@ export default function KhataPage() {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setUdharType('give')}
-                    className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border-2 border-rose-200 dark:border-rose-500/30 hover:border-rose-400 dark:hover:border-rose-500/50 transition-all group"
+                    className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border-2 border-emerald-200 dark:border-emerald-500/30 hover:border-emerald-400 dark:hover:border-emerald-500/50 transition-all group"
                   >
-                    <div className="h-10 w-10 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <div className="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                       <ArrowUpRight className="h-5 w-5" />
                     </div>
-                    <span className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase">Maine Diye</span>
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">Lena Hai</span>
                   </motion.button>
 
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setUdharType('receive')}
-                    className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border-2 border-emerald-200 dark:border-emerald-500/30 hover:border-emerald-400 dark:hover:border-emerald-500/50 transition-all group"
+                    className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border-2 border-rose-200 dark:border-rose-500/30 hover:border-rose-400 dark:hover:border-rose-500/50 transition-all group"
                   >
-                    <div className="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <div className="h-10 w-10 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                       <ArrowDownLeft className="h-5 w-5" />
                     </div>
-                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">Mujhe Mile</span>
+                    <span className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase">Dena Hai</span>
                   </motion.button>
                 </div>
 
@@ -365,7 +365,7 @@ export default function KhataPage() {
                       
                       setIsSubmitting(true);
                       try {
-                        await addCreditTransaction({
+                         await addCreditTransaction({
                           customerId: selectedCustomer.id,
                           amount: halfAmount,
                           type,
@@ -398,15 +398,15 @@ export default function KhataPage() {
                   <button 
                     type="button" 
                     onClick={() => setUdharType(null)}
-                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 underline"
+                    className="text-xs font-bold text-indigo-650 dark:text-indigo-400 underline"
                   >
                     ← Change Type
                   </button>
                   <span className={cn(
                     "text-xs font-black uppercase px-3 py-1.5 rounded-full text-white",
-                    udharType === 'give' ? "bg-rose-500" : "bg-emerald-500"
+                    udharType === 'give' ? "bg-emerald-500" : "bg-rose-500"
                   )}>
-                    {udharType === 'give' ? "Maine Diye" : "Mujhe Mile"}
+                    {udharType === 'give' ? "Lena Hai" : "Dena Hai"}
                   </span>
                 </div>
 

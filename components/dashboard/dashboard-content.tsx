@@ -137,7 +137,7 @@ export function DashboardContent() {
 
       {/* Elegant & Minimalist Net Balance Card (fintech style) */}
       <section>
-        <div className="relative overflow-hidden bg-gradient-to-tr from-[#6D5DF6]/10 to-[#818cf8]/5 dark:from-[#6D5DF6]/20 dark:to-slate-900 border border-indigo-100/40 dark:border-white/5 rounded-[24px] shadow-[0_8px_32px_rgba(109,93,246,0.04)] p-5 space-y-5">
+        <div className="relative overflow-hidden bg-gradient-to-tr from-[#6D5DF6]/10 to-[#818cf8]/5 dark:from-[#6D5DF6]/20 dark:to-slate-900 border border-indigo-100/40 dark:border-white/5 rounded-[24px] shadow-[0_8px_32px_rgba(109,93,246,0.04)] p-4 space-y-3">
           {/* Decorative background glow */}
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-indigo-400/10 rounded-full blur-2xl pointer-events-none" />
           
@@ -158,17 +158,17 @@ export function DashboardContent() {
           </div>
 
           {/* Quick Net Indicator Statement */}
-          <div className="text-[11px] text-slate-400 dark:text-slate-550 font-medium border-t border-indigo-100/30 dark:border-white/5 pt-4 flex items-center gap-1.5 relative z-10">
+          <div className="text-[11px] text-slate-400 dark:text-slate-550 font-medium border-t border-indigo-100/30 dark:border-white/5 pt-2.5 flex items-center gap-1.5 relative z-10">
             <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             Real-time balance tracking across active bookkeeping ledgers
           </div>
 
           {/* Lena & Dena Statistic Cards with Icons */}
-          <div className="grid grid-cols-2 gap-4 relative z-10">
+          <div className="grid grid-cols-2 gap-3 relative z-10">
             {/* Lena Hai (Get) */}
-            <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-100 dark:border-white/5 rounded-2xl p-4 flex flex-col justify-between space-y-2 shadow-sm">
+            <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-100 dark:border-white/5 rounded-2xl p-3 flex flex-col justify-between space-y-1.5 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-555 uppercase tracking-wider">
                   Lena Hai
                 </span>
                 <div className="h-7 w-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-450">
@@ -181,7 +181,7 @@ export function DashboardContent() {
             </div>
 
             {/* Dena Hai (Pay) */}
-            <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-100 dark:border-white/5 rounded-2xl p-4 flex flex-col justify-between space-y-2 shadow-sm">
+            <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-100 dark:border-white/5 rounded-2xl p-3 flex flex-col justify-between space-y-1.5 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-wider">
                   Dena Hai

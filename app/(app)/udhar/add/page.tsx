@@ -37,7 +37,7 @@ export default function UdharAddPage() {
         customerId: customerId as string,
         amount: Number(amount),
         type: udharType,
-        description: note || (udharType === 'give' ? 'Maine Diye' : 'Mujhe Mile'),
+        description: note || (udharType === 'give' ? 'Lena Hai' : 'Dena Hai'),
         date: new Date().toISOString(),
       });
 
@@ -107,7 +107,7 @@ export default function UdharAddPage() {
                         : "bg-slate-100/60 dark:bg-slate-800 border-slate-200/40 dark:border-slate-700 text-slate-600 dark:text-slate-400"
                     )}
                   >
-                    Maine Diye
+                    Lena Hai
                   </button>
                   <button
                     type="button"
@@ -115,11 +115,11 @@ export default function UdharAddPage() {
                     className={cn(
                       "h-12 rounded-2xl text-sm font-bold transition-all border-2 flex items-center justify-center",
                       udharType === 'receive'
-                        ? "bg-rose-50 dark:bg-rose-500/20 border-rose-500 text-rose-700 dark:text-rose-400"
+                        ? "bg-rose-50 dark:bg-rose-500/20 border-rose-500 text-rose-700 dark:text-rose-455"
                         : "bg-slate-100/60 dark:bg-slate-800 border-slate-200/40 dark:border-slate-700 text-slate-600 dark:text-slate-400"
                     )}
                   >
-                    Mujhe Mile
+                    Dena Hai
                   </button>
                 </div>
               </div>
