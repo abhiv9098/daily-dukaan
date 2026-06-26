@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { ReportsSummary } from "@/components/reports/reports-summary";
 import { BudgetsList } from "@/components/reports/budgets-list";
 import { TransactionFiltersBar } from "@/components/transactions/transaction-filters";
@@ -13,12 +14,49 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Trash2, ListFilter, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExportToolbar } from "@/components/export/export-toolbar";
+import { subDays, startOfMonth, startOfYear, format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export default function ReportsPage() {
   const { transactions, isLoaded, deleteTransactions } = useHisaabContext();
-  const { filters } = useFilterContext();
+  const { filters, setFilters } = useFilterContext();
   const { language } = useLanguage();
   const filtered = useFilteredTransactions(transactions, filters);
+
+  const currentPeriod = useMemo(() => {
+    const todayStr = format(new Date(), "yyyy-MM-dd");
+    if (filters.dateFrom === todayStr && filters.dateTo === todayStr) return "Today";
+    
+    const weekAgoStr = format(subDays(new Date(), 6), "yyyy-MM-dd");
+    if (filters.dateFrom === weekAgoStr && filters.dateTo === todayStr) return "Week";
+    
+    const startMonthStr = format(startOfMonth(new Date()), "yyyy-MM-dd");
+    if (filters.dateFrom === startMonthStr && filters.dateTo === todayStr) return "Month";
+    
+    const startYearStr = format(startOfYear(new Date()), "yyyy-MM-dd");
+    if (filters.dateFrom === startYearStr && filters.dateTo === todayStr) return "Year";
+    
+    return null;
+  }, [filters.dateFrom, filters.dateTo]);
+
+  const handlePeriodChange = (period: string) => {
+    const todayStr = format(new Date(), "yyyy-MM-dd");
+    let dateFrom = todayStr;
+    
+    if (period === "Week") {
+      dateFrom = format(subDays(new Date(), 6), "yyyy-MM-dd");
+    } else if (period === "Month") {
+      dateFrom = format(startOfMonth(new Date()), "yyyy-MM-dd");
+    } else if (period === "Year") {
+      dateFrom = format(startOfYear(new Date()), "yyyy-MM-dd");
+    }
+    
+    setFilters(prev => ({
+      ...prev,
+      dateFrom,
+      dateTo: todayStr
+    }));
+  };
 
   if (!isLoaded) return null;
 
@@ -52,9 +90,23 @@ export default function ReportsPage() {
          <div className="flex items-center justify-between px-1">
             <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Time Period</h3>
             <div className="flex gap-2">
-               {['Today', 'Week', 'Month', 'Year'].map(p => (
-                 <button key={p} className="text-[10px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors">{p}</button>
-               ))}
+                {['Today', 'Week', 'Month', 'Year'].map(p => {
+                  const isActive = currentPeriod === p;
+                  return (
+                    <button 
+                      key={p} 
+                      onClick={() => handlePeriodChange(p)}
+                      className={cn(
+                        "text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-200 border",
+                        isActive 
+                          ? "bg-indigo-600 border-indigo-600 text-white shadow-sm shadow-indigo-600/25" 
+                          : "bg-slate-100 dark:bg-white/5 border-transparent text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 hover:text-indigo-600 dark:hover:text-indigo-400"
+                      )}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
             </div>
          </div>
          <DaySelector />
