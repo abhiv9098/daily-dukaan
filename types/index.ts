@@ -66,6 +66,8 @@ export interface ShopSettings {
   currency: string;
   darkMode: boolean;
   appLockEnabled: boolean;
+  email?: string;
+  phone?: string;
 }
 
 export interface Loss {

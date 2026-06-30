@@ -14,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { LanguageToggle } from "@/components/layout/language-toggle";
 import { useHisaabContext } from "@/context/hisaab-context";
 import { useFilterContext } from "@/context/filter-context";
 import { useLanguage } from "@/context/language-context";
@@ -100,7 +99,6 @@ export function Navbar() {
       </div>
 
       <div className="flex items-center gap-3">
-        <LanguageToggle />
         <Link href="/profile">
           <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 border border-white/5 bg-white/5 hover:border-purple-500/50 transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]">
              <User className="h-5 w-5 text-muted-foreground group-hover:text-purple-500 transition-colors" />

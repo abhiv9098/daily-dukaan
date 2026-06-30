@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Store, 
-  Globe, 
   Moon, 
   Shield, 
   KeyRound, 
@@ -35,10 +34,12 @@ const CURRENCY_OPTIONS = [
 export default function SettingsPage() {
   const router = useRouter();
   const { settings, updateSettings } = useHisaabContext();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
 
   const [shopName, setShopName] = useState("");
   const [currency, setCurrency] = useState("INR");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("1234");
   const [newPin, setNewPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
@@ -49,6 +50,8 @@ export default function SettingsPage() {
     if (settings) {
       setShopName(settings.shopName || "Mera Hisab");
       setCurrency(settings.currency || "INR");
+      setEmail(settings.email || "");
+      setPhone(settings.phone || "");
     }
     const savedPin = localStorage.getItem("hisaab_app_lock_pin") || "1234";
     setPin(savedPin);
@@ -62,7 +65,7 @@ export default function SettingsPage() {
   const handleSaveShopDetails = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!shopName.trim()) return;
-    await updateSettings({ shopName, currency });
+    await updateSettings({ shopName, currency, email, phone });
     showNotification("Shop details updated successfully!");
   };
 
@@ -159,6 +162,28 @@ export default function SettingsPage() {
                   placeholder="e.g. Apna Bazar"
                   className="h-12 px-4 rounded-xl text-sm border-slate-200 dark:border-white/5 font-semibold"
                   required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Gmail / Email</label>
+                <Input 
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g. abhishek@gmail.com"
+                  className="h-12 px-4 rounded-xl text-sm border-slate-200 dark:border-white/5 font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Mobile Number</label>
+                <Input 
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 9876543210"
+                  className="h-12 px-4 rounded-xl text-sm border-slate-200 dark:border-white/5 font-semibold"
                 />
               </div>
 
@@ -282,11 +307,11 @@ export default function SettingsPage() {
         </Card>
       </div>
 
-      {/* Display & Language Preferences */}
+      {/* Display Preferences */}
       <Card className="p-8 space-y-6">
         <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4">
           <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center text-blue-600 dark:text-blue-400">
-            <Globe className="h-5 w-5" />
+            <Moon className="h-5 w-5" />
           </div>
           <div>
             <h3 className="font-bold text-base">App Preferences</h3>
@@ -294,7 +319,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div>
           {/* Dark Mode Preference */}
           <div className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
             <div className="flex items-center gap-3.5">
@@ -318,39 +343,6 @@ export default function SettingsPage() {
                 className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm" 
               />
             </button>
-          </div>
-
-          {/* Language Preference */}
-          <div className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-            <div className="flex items-center gap-3.5">
-              <div className="h-9 w-9 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-500">
-                <Globe className="h-4 w-4" />
-              </div>
-              <div>
-                <span className="font-bold text-sm block">System Language</span>
-                <span className="text-[10px] text-slate-400 font-medium">Select localized language</span>
-              </div>
-            </div>
-            <div className="flex gap-1 bg-slate-200 dark:bg-slate-800 p-1 rounded-xl">
-              <button 
-                onClick={() => setLanguage("en")}
-                className={cn(
-                  "px-3 py-1.5 text-[10px] font-black rounded-lg transition-all",
-                  language === "en" ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400"
-                )}
-              >
-                EN
-              </button>
-              <button 
-                onClick={() => setLanguage("hi")}
-                className={cn(
-                  "px-3 py-1.5 text-[10px] font-black rounded-lg transition-all",
-                  language === "hi" ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400"
-                )}
-              >
-                हिन्दी
-              </button>
-            </div>
           </div>
         </div>
       </Card>

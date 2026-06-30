@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ReportsSummary } from "@/components/reports/reports-summary";
 import { BudgetsList } from "@/components/reports/budgets-list";
 import { TransactionFiltersBar } from "@/components/transactions/transaction-filters";
@@ -11,7 +11,7 @@ import { useFilterContext } from "@/context/filter-context";
 import { useFilteredTransactions } from "@/hooks/use-filtered-transactions";
 import { useLanguage } from "@/context/language-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Trash2, ListFilter, Calendar } from "lucide-react";
+import { Trash2, ListFilter, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExportToolbar } from "@/components/export/export-toolbar";
 import { subDays, startOfMonth, startOfYear, format } from "date-fns";
@@ -22,6 +22,14 @@ export default function ReportsPage() {
   const { filters, setFilters } = useFilterContext();
   const { language } = useLanguage();
   const filtered = useFilteredTransactions(transactions, filters);
+  const [activeTab, setActiveTab] = useState("all");
+
+  const summaryTransactions = useMemo(() => {
+    if (activeTab === "income") return filtered.filter(t => t.type === 'income');
+    if (activeTab === "expense") return filtered.filter(t => t.type === 'expense');
+    if (activeTab === "udhaar") return filtered.filter(t => t.type === 'udhaar' || t.type === 'payment');
+    return filtered;
+  }, [filtered, activeTab]);
 
   const currentPeriod = useMemo(() => {
     const todayStr = format(new Date(), "yyyy-MM-dd");
@@ -60,9 +68,11 @@ export default function ReportsPage() {
 
   if (!isLoaded) return null;
 
-  const handleDeleteAll = (type?: 'income' | 'expense') => {
+  const handleDeleteAll = (type?: 'income' | 'expense' | 'udhar_all') => {
     const listToDelete = type 
-      ? filtered.filter(t => t.type === type) 
+      ? (type === 'udhar_all'
+          ? filtered.filter(t => t.type === 'udhaar' || t.type === 'payment')
+          : filtered.filter(t => t.type === type))
       : filtered;
     
     if (confirm(`Are you sure you want to delete all ${listToDelete.length} filtered transactions?`)) {
@@ -72,17 +82,9 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-8 pb-20">
-      {/* Premium Header */}
-      <section className="px-1 pt-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Analysis & Reports</h2>
-            <p className="text-slate-500 font-medium text-sm">Grow your business with deep insights.</p>
-          </div>
-          <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 border border-indigo-100">
-             <BarChart3 className="h-6 w-6" />
-          </div>
-        </div>
+      {/* Compact Header */}
+      <section className="px-1 pt-2 flex items-center justify-between">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Reports</h2>
       </section>
 
       {/* Quick Filters */}
@@ -119,12 +121,12 @@ export default function ReportsPage() {
 
       {/* Core Analytics - Displays both Income and Expense summary */}
       <section className="space-y-6">
-        <ReportsSummary transactions={filtered} />
+        <ReportsSummary transactions={summaryTransactions} />
       </section>
 
       {/* Tabbed Ledgers */}
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 h-14 bg-slate-100 dark:bg-white/5 rounded-2xl p-1 mb-8">
+      <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="all" className="w-full">
+        <TabsList className="w-full grid grid-cols-4 h-14 bg-slate-100 dark:bg-white/5 rounded-2xl p-1 mb-8">
           <TabsTrigger 
             value="all" 
             className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold text-xs"
@@ -142,6 +144,12 @@ export default function ReportsPage() {
             className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold text-xs"
           >
             Kharcha
+          </TabsTrigger>
+          <TabsTrigger 
+            value="udhaar" 
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm transition-all font-bold text-xs"
+          >
+            Udhar
           </TabsTrigger>
         </TabsList>
 
@@ -193,6 +201,23 @@ export default function ReportsPage() {
           </div>
           <div className="fintech-card overflow-hidden">
             <TransactionTable transactions={filtered.filter(t => t.type === 'expense')} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="udhaar" className="space-y-4 px-1 mt-0">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Udhar Ledger</h3>
+            <div className="flex gap-2">
+              <TransactionFiltersBar showSearch={false} />
+              {filtered.filter(t => t.type === 'udhaar' || t.type === 'payment').length > 0 && (
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteAll('udhar_all')} className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-50">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="fintech-card overflow-hidden">
+            <TransactionTable transactions={filtered.filter(t => t.type === 'udhaar' || t.type === 'payment')} />
           </div>
         </TabsContent>
       </Tabs>

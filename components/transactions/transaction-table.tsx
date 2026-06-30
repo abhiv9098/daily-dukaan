@@ -1,6 +1,7 @@
 "use client";
 
-import { Edit3, Trash2, ArrowUpRight, ArrowDownLeft, FileText, User } from "lucide-react";
+import { Edit3, Trash2, ArrowUpRight, ArrowDownLeft, FileText, User, Plus } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Transaction } from "@/types";
@@ -44,9 +45,15 @@ export function TransactionTable({ transactions, showActions = true }: Transacti
           <FileText className="h-8 w-8 text-slate-400" />
         </div>
         <h3 className="text-base font-black text-slate-900 dark:text-white mb-1.5 uppercase tracking-tight">Koi Hisaab Nahi Hai</h3>
-        <p className="text-xs text-slate-500 font-bold text-center max-w-[220px] leading-relaxed">
+        <p className="text-xs text-slate-500 font-bold text-center max-w-[220px] leading-relaxed mb-6">
           Abhi tak koi entry nahi hui hai. Nayi entry add karne ke liye <span className="text-primary">+</span> dabayein.
         </p>
+        <Link href="/udhar/add">
+          <Button className="rounded-2xl font-bold bg-[#6D5DF6] hover:bg-[#6D5DF6]/95 text-white shadow-lg transition-all px-6 h-11 text-xs">
+            <Plus className="h-4 w-4 mr-2" strokeWidth={2.5} />
+            Add Udhar
+          </Button>
+        </Link>
       </motion.div>
     );
   }
@@ -64,12 +71,12 @@ export function TransactionTable({ transactions, showActions = true }: Transacti
           <div className="flex items-center gap-4 min-w-0">
             <div
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                transaction.type === "income" || transaction.type === "payment"
+                transaction.type === "income" || transaction.type === "udhaar"
                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                   : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
               } shadow-inner border border-transparent group-hover:border-current/10 transition-colors`}
             >
-              {transaction.type === "income" || transaction.type === "payment" ? (
+              {transaction.type === "income" || transaction.type === "udhaar" ? (
                 <ArrowUpRight className="h-5 w-5" strokeWidth={2.5} />
               ) : (
                 <ArrowDownLeft className="h-5 w-5" strokeWidth={2.5} />
@@ -83,6 +90,16 @@ export function TransactionTable({ transactions, showActions = true }: Transacti
                 <span className="text-[9px] font-black uppercase tracking-widest text-primary px-2 py-0.5 bg-primary/5 rounded-md border border-primary/5 whitespace-nowrap">
                    {t(transaction.category as any)}
                 </span>
+                {transaction.type === 'udhaar' && (
+                  <span className="text-[9px] font-black uppercase tracking-[0.12em] text-rose-600 dark:text-rose-400 px-2 py-0.5 bg-rose-50 dark:bg-rose-950/20 rounded-md border border-rose-100 dark:border-rose-950/40 whitespace-nowrap">
+                    Given (Diya)
+                  </span>
+                )}
+                {transaction.type === 'payment' && (
+                  <span className="text-[9px] font-black uppercase tracking-[0.12em] text-emerald-600 dark:text-emerald-400 px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/20 rounded-md border border-emerald-100 dark:border-emerald-950/40 whitespace-nowrap">
+                    Received (Mila)
+                  </span>
+                )}
                 <p className="text-[11px] font-bold text-slate-400 truncate">
                   {transaction.customerName && transaction.description && transaction.description !== "Entry" 
                     ? `${transaction.description} • ` 
@@ -96,9 +113,9 @@ export function TransactionTable({ transactions, showActions = true }: Transacti
           
           <div className="flex flex-col items-end gap-2 shrink-0">
             <p className={`text-base font-black tracking-tighter tabular-nums ${
-              transaction.type === "income" || transaction.type === "payment" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+              transaction.type === "income" || transaction.type === "udhaar" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
             }`}>
-              {transaction.type === "income" || transaction.type === "payment" ? "+" : "-"}
+              {transaction.type === "income" || transaction.type === "udhaar" ? "+" : "-"}
               {formatCurrency(transaction.amount, settings.currency)}
             </p>
             {showActions && (

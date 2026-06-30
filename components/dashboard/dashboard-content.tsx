@@ -418,17 +418,17 @@ export function DashboardContent() {
           ) : (
             <div className="divide-y divide-slate-50 dark:divide-white/5">
               {filteredTransactions.slice(0, 4).map((t) => {
-                const isIncome = t.type === 'income';
+                const isPositive = t.type === 'income' || t.type === 'udhaar';
                 return (
                   <div key={t.id} className="p-4 flex items-center justify-between hover:bg-slate-50/50 dark:hover:bg-white/5 transition duration-150 group">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={cn(
                         "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border",
-                        isIncome 
+                        isPositive 
                           ? "bg-emerald-500/10 border-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
                           : "bg-rose-500/10 border-rose-500/10 text-rose-600 dark:text-rose-400"
                       )}>
-                        {isIncome ? <ArrowUpRight className="h-5 w-5" strokeWidth={2.5} /> : <ArrowDownLeft className="h-5 w-5" strokeWidth={2.5} />}
+                        {isPositive ? <ArrowUpRight className="h-5 w-5" strokeWidth={2.5} /> : <ArrowDownLeft className="h-5 w-5" strokeWidth={2.5} />}
                       </div>
                       
                       <div className="min-w-0">
@@ -448,9 +448,9 @@ export function DashboardContent() {
                       <div className="text-right">
                         <span className={cn(
                           "text-xs font-black",
-                          isIncome ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                          isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                         )}>
-                          {isIncome ? "+" : "-"} {settings.currency} {t.amount.toLocaleString()}
+                          {isPositive ? "+" : "-"} {settings.currency} {t.amount.toLocaleString()}
                         </span>
                       </div>
                       

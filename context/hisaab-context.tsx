@@ -2,16 +2,18 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useHisaab } from "@/hooks/use-hisaab";
+import { useRouter, usePathname } from "next/navigation";
 
 type LocalUser = {
   id: string;
-  email: string;
+  email?: string;
+  phone?: string;
   user_metadata: {
     full_name?: string;
   };
 };
 
-const HisaabContext = createContext<(ReturnType<typeof useHisaab> & { user: LocalUser | null }) | null>(null);
+const HisaabContext = createContext<(ReturnType<typeof useHisaab> & { user: LocalUser | null; logout: () => void }) | null>(null);
 
 export function HisaabProvider({ children }: { children: React.ReactNode }) {
   return <HisaabProviderInner>{children}</HisaabProviderInner>;
@@ -20,23 +22,31 @@ export function HisaabProvider({ children }: { children: React.ReactNode }) {
 function HisaabProviderInner({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<LocalUser | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    // Mock user for local development
-    const mockUser: LocalUser = {
-      id: "local-user",
-      email: "guest@example.com",
-      user_metadata: {
-        full_name: "Local User",
-      },
-    };
-    setUser(mockUser);
+    const storedUser = localStorage.getItem("hisaab_current_user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
+      if (pathname !== "/login") {
+        router.push("/login");
+      }
+    }
     setIsUserLoading(false);
-  }, []);
+  }, [pathname, router]);
 
-  const hisaab = useHisaab(user?.id);
+  const logout = () => {
+    localStorage.removeItem("hisaab_current_user");
+    setUser(null);
+    router.push("/login");
+  };
 
-  if (isUserLoading || !hisaab.isLoaded) {
+  const hisaab = useHisaab(user?.id || "guest-user");
+
+  if (pathname !== "/login" && (isUserLoading || !user || !hisaab.isLoaded)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#09090b] text-muted-foreground">
         <div className="flex flex-col items-center gap-4">
@@ -48,7 +58,7 @@ function HisaabProviderInner({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <HisaabContext.Provider value={{ ...hisaab, user }}>{children}</HisaabContext.Provider>
+    <HisaabContext.Provider value={{ ...hisaab, user, logout }}>{children}</HisaabContext.Provider>
   );
 }
 

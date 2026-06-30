@@ -14,7 +14,9 @@ import {
   Upload,
   Bell,
   Camera,
-  Check
+  Check,
+  Mail,
+  Phone
 } from "lucide-react";
 import { useHisaabContext } from "@/context/hisaab-context";
 import { useRouter } from "next/navigation";
@@ -24,7 +26,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
-  const { settings, updateSettings, user } = useHisaabContext();
+  const { settings, updateSettings, user, logout } = useHisaabContext();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -68,13 +70,63 @@ export default function ProfilePage() {
           </div>
         </div>
         <div className="mt-6 text-center">
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Premium Merchant</h2>
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-1">{user?.email || "Abhishek Sharma"}</p>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{settings?.shopName || "Premium Merchant"}</h2>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-1">{settings?.email || user?.email || "Abhishek Sharma"}</p>
         </div>
       </section>
 
       {/* Settings Grid */}
       <div className="grid gap-6">
+        {/* Merchant Profile Details */}
+        <section className="space-y-3 px-1">
+          <div className="flex items-center justify-between ml-1">
+            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Merchant Profile</h3>
+            <button 
+              onClick={() => router.push('/settings')} 
+              className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider"
+            >
+              Edit Details
+            </button>
+          </div>
+          <div className="fintech-card overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                  <User className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Shop Name</span>
+                  <span className="font-bold text-sm">{settings?.shopName || "Mera Hisab"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Gmail / Email</span>
+                  <span className="font-bold text-sm text-slate-800 dark:text-slate-200">{settings?.email || "Not Set"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                  <Phone className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Mobile Number</span>
+                  <span className="font-bold text-sm text-slate-800 dark:text-slate-200">{settings?.phone || "Not Set"}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Appearance & Security */}
         <section className="space-y-3 px-1">
           <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Account Settings</h3>
@@ -89,7 +141,7 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-white/5">
+            <div className="flex items-center justify-between p-5">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400"><Shield className="h-5 w-5" /></div>
                 <span className="font-bold text-sm">App Lock (PIN)</span>
@@ -97,17 +149,6 @@ export default function ProfilePage() {
               <button onClick={() => updateSettings({ appLockEnabled: !settings.appLockEnabled })} className={cn("w-12 h-6 rounded-full relative transition-colors", settings.appLockEnabled ? "bg-primary" : "bg-slate-200")}>
                 <motion.div animate={{ x: settings.appLockEnabled ? 24 : 4 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
               </button>
-            </div>
-
-            <div className="flex items-center justify-between p-5">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-400"><Globe className="h-5 w-5" /></div>
-                <span className="font-bold text-sm">Language</span>
-              </div>
-              <div className="flex gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl">
-                 <button className="px-3 py-1 text-[10px] font-black rounded-lg bg-white shadow-sm">EN</button>
-                 <button className="px-3 py-1 text-[10px] font-black rounded-lg text-slate-400">HI</button>
-              </div>
             </div>
           </div>
         </section>
@@ -158,7 +199,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="px-1 pt-4 pb-10">
-        <Button variant="ghost" onClick={() => router.push('/login')} className="w-full h-14 rounded-2xl bg-slate-100 dark:bg-white/5 font-black text-slate-600 dark:text-slate-400">
+        <Button variant="ghost" onClick={logout} className="w-full h-14 rounded-2xl bg-slate-100 dark:bg-white/5 font-black text-slate-600 dark:text-slate-400">
            <LogOut className="h-5 w-5 mr-2" /> Log Out
         </Button>
         <p className="text-center text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mt-8">Dukaan Premium v2.5</p>

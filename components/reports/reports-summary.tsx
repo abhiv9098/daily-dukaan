@@ -27,8 +27,9 @@ export function ReportsSummary({ transactions }: ReportsSummaryProps) {
 
     transactions.forEach((t) => {
       const amount = Number(t.amount);
-      if (t.type === "income") income += amount;
-      else {
+      if (t.type === "income" || t.type === "payment") {
+        income += amount;
+      } else if (t.type === "expense" || t.type === "udhaar") {
         expense += amount;
         byCategory[t.category] = (byCategory[t.category] || 0) + amount;
       }

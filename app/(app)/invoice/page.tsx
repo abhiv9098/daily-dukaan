@@ -49,22 +49,35 @@ export default function InvoicePage() {
     doc.setTextColor(99, 102, 241); // Primary color
     doc.text(settings.shopName || "Hisaab Invoice", 20, 20);
     
+    let yOffset = 28;
+    
+    // Vendor Contact Info
+    const contactParts: string[] = [];
+    if (settings.email) contactParts.push(`Email: ${settings.email}`);
+    if (settings.phone) contactParts.push(`Phone: ${settings.phone}`);
+    if (contactParts.length > 0) {
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      doc.text(contactParts.join(" | "), 20, 26);
+      yOffset = 33;
+    }
+    
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.text(`Invoice Date: ${format(new Date(), "PPP")}`, 20, 28);
-    doc.text(`Invoice No: INV-${Date.now().toString().slice(-6)}`, 20, 33);
+    doc.text(`Invoice Date: ${format(new Date(), "PPP")}`, 20, yOffset);
+    doc.text(`Invoice No: INV-${Date.now().toString().slice(-6)}`, 20, yOffset + 5);
 
     // Client Info
     doc.setFontSize(12);
     doc.setTextColor(0);
-    doc.text("Bill To:", 20, 50);
+    doc.text("Bill To:", 20, yOffset + 22);
     doc.setFontSize(10);
-    doc.text(clientName || "Cash Customer", 20, 57);
-    if (clientAddress) doc.text(clientAddress, 20, 62);
+    doc.text(clientName || "Cash Customer", 20, yOffset + 29);
+    if (clientAddress) doc.text(clientAddress, 20, yOffset + 34);
 
     // Table
     autoTable(doc, {
-      startY: 75,
+      startY: yOffset + 42,
       head: [["Description", "Qty", "Price", "Total"]],
       body: items.map(item => [
         item.description,

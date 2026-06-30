@@ -19,6 +19,8 @@ const defaultSettings: ShopSettings = {
   currency: "INR",
   darkMode: false,
   appLockEnabled: true,
+  email: "guest@example.com",
+  phone: "9876543210",
 };
 
 const STORAGE_KEYS = {
@@ -33,6 +35,17 @@ const STORAGE_KEYS = {
 };
 
 export function useHisaab(userId: string = "local-user") {
+  const STORAGE_KEYS = {
+    TRANSACTIONS: `hisaab_transactions_${userId}`,
+    SETTINGS: `hisaab_settings_${userId}`,
+    BUDGETS: `hisaab_budgets_${userId}`,
+    SAVINGS: `hisaab_savings_${userId}`,
+    CUSTOMERS: `hisaab_customers_${userId}`,
+    CREDIT_TRANSACTIONS: `hisaab_credit_transactions_${userId}`,
+    LOSSES: `hisaab_losses_${userId}`,
+    BORROWINGS: `hisaab_borrowings_${userId}`,
+  };
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [settings, setSettings] = useState<ShopSettings>(defaultSettings);
   const [budgets, setBudgets] = useState<Budget[]>([]);
@@ -55,14 +68,14 @@ export function useHisaab(userId: string = "local-user") {
       const storedLosses = localStorage.getItem(STORAGE_KEYS.LOSSES);
       const storedBorrowings = localStorage.getItem(STORAGE_KEYS.BORROWINGS);
 
-      if (storedTransactions) setTransactions(JSON.parse(storedTransactions));
-      if (storedSettings) setSettings(JSON.parse(storedSettings));
-      if (storedBudgets) setBudgets(JSON.parse(storedBudgets));
-      if (storedSavings) setSavings(JSON.parse(storedSavings));
-      if (storedCustomers) setCustomers(JSON.parse(storedCustomers));
-      if (storedCredit) setCreditTransactions(JSON.parse(storedCredit));
-      if (storedLosses) setLosses(JSON.parse(storedLosses));
-      if (storedBorrowings) setBorrowings(JSON.parse(storedBorrowings));
+      setTransactions(storedTransactions ? JSON.parse(storedTransactions) : []);
+      setSettings(storedSettings ? JSON.parse(storedSettings) : defaultSettings);
+      setBudgets(storedBudgets ? JSON.parse(storedBudgets) : []);
+      setSavings(storedSavings ? JSON.parse(storedSavings) : []);
+      setCustomers(storedCustomers ? JSON.parse(storedCustomers) : []);
+      setCreditTransactions(storedCredit ? JSON.parse(storedCredit) : []);
+      setLosses(storedLosses ? JSON.parse(storedLosses) : []);
+      setBorrowings(storedBorrowings ? JSON.parse(storedBorrowings) : []);
 
       if (!storedSettings) {
         localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(defaultSettings));
@@ -72,7 +85,7 @@ export function useHisaab(userId: string = "local-user") {
     } finally {
       setIsLoaded(true);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     loadLocalData();
